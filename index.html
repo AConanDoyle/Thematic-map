@@ -7,163 +7,145 @@
         <meta name="mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-capable" content="yes">
         <link rel="stylesheet" href="http://unpkg.com/leaflet@1.0.3/dist/leaflet.css">
-        <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
         <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />	
         <script src="http://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
-        <script src="js/leaflet-providers.js"></script>
         <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/autolinker/3.0.5/Autolinker.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-hash/0.2.1/leaflet-hash.min.js"></script>
+
         <style>
+
         html, body, #map {
             width: 100%;
             height: 100%;
             padding: 0;
             margin: 0;
         }
+
         </style>
-        <title></title>
+        <title>Karte der Lageinformation</title>
     </head>
     <body>
         <div id="map">
         </div>
-        <script src="js/qgis2web_expressions.js"></script>
-        <script src="http://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
-        <script src="js/multi-style-layer.js"></script>
-        <script src="js/leaflet.pattern.js"></script>
-        <script src="js/leaflet-hash.js"></script>
-        <script src="js/Autolinker.min.js"></script>
-        <script src="js/rbush.min.js"></script>
         <script src="data/oecd_0.js"></script>
         <script src="data/KOLIBRIcountries_1.js"></script>
-        <script>
-        
-        // basemap source
-        var basemap_carto = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
-			attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://cartodb.com/attributions">CartoDB</a>'
-		}), basemap_esri = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-			attribution: ' Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
-        });
 
-        var map = L.map('map', {
+        <script>
+                   
+		var hash = new L.Hash(map);
+        var feature_group = new L.featureGroup([]);
+        var access_token = 'access_token=pk.eyJ1IjoiZmVvcyIsImEiOiJjandoa3E1ODQyN2NwNDhtcThna2RpbzdwIn0.1Igm1-YZfJKfGRVWzm2CkA';
+        var basemap_street = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/256/{z}/{x}/{y}?' + access_token),
+            basemap_satellite = L.tileLayer('https://api.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}.png?' + access_token);
+
+		var map = L.map('map', {
 			zoomControl: true,
 			maxZoom: 19,
-			layers: [basemap_esri, basemap_carto]
-		})// .fitBounds([[52.38884, 12.99408], [52.697742041, 13.7397442714]]);
-		
-/*         // fullscrenn control
+            layers: [basemap_satellite, basemap_street]
+        
+		}).fitBounds([[7.0, -136.0], [74.0, 47.0]]);
+        
+        // fullscrenn control
 		map.addControl(new L.Control.Fullscreen({
 			title: {
 				'false': 'View Fullscreen',
 				'true': 'Exit Fullscreen'
 			}
-		})); */
+        }));
+        
+		function pop_Spots(feature, layer) {
+			var popupContent = '<table><tr><th scope="row">NAME</th><td>' + String(feature.properties['NAME']) + '</td></tr><tr><th scope="row">Adresse</th><td>' +
+				String(feature.properties['STRASSE']) + ' ' + nullCheck(String(feature.properties['HAUSNR'])) +
+				'</td></tr><tr><th scope="row">OEFFZEIT</th><td>' + nullCheck(String(feature.properties['OEFFZEIT'])) + '</td></tr><tr><th scope="row">PREIS</th><td>' +
+				String(feature.properties['PREIS']) + '</td></tr><tr><th scope="row">INOUT</th><td>' + String(feature.properties['INOUT']) +
+				'</td></tr><tr><th scope="row">NUTZEN</th><td>' + String(feature.properties['NUTZEN']) + '</td></tr><tr><th scope="row">MATERIAL</th><td>' +
+				String(feature.properties['MATERIAL']) + '</td></tr><tr><th scope="row">KROUTEN</th><td>' + String(feature.properties['KROUTEN']) +
+				'</td></tr><tr><th scope="row">BROUTEN</th><td>' + String(feature.properties['BROUTEN']) + '</td></tr><tr><th scope="row">HOMEPAGE</th><td>' +
+				nullCheck(Autolinker.link(String(feature.properties['HOMEPAGE']), { truncate: 20}));
+			layer.bindPopup(popupContent);
+        }
+        
 
-        // bounding box
-        var hash = new L.Hash(map);
-        var bounds_group = new L.featureGroup([]);
-        function setBounds() {
-            if (bounds_group.getLayers().length) {
-                map.fitBounds(bounds_group.getBounds());
-            }
-        }
+		// adds dataset KletterBoulderSpots
+		var exp_KletterBoulderSpotsJSON = new L.geoJson(exp_KletterBoulderSpots, {
+			onEachFeature: pop_Spots,
+			pointToLayer: function (feature, latlng) {
+				return L.marker(latlng, {
+					icon: iconSelector(Autolinker.link(String(feature.properties['INOUT'])),
+						Autolinker.link(String(feature.properties['NUTZEN'])))
+				})
+			}
+		});
 
-        function pop_oecd_0(feature, layer) {
-            var popupContent = '<table>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['OBJECTID'] !== null ? Autolinker.link(String(feature.properties['OBJECTID'])) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['NAME'] !== null ? Autolinker.link(String(feature.properties['NAME'])) : '') + '</td>\
-                    </tr>\
-                </table>';
-            layer.bindPopup(popupContent, {maxHeight: 400});
-        }
-
-        function style_oecd_0_0() {
-            return {
-                pane: 'pane_oecd_0',
-                opacity: 1,
-                color: 'rgba(0,0,0,1.0)',
-                dashArray: '',
-                lineCap: 'butt',
-                lineJoin: 'miter',
-                weight: 1.0, 
-                fill: true,
-                fillOpacity: 1,
-                fillColor: 'rgba(104,146,140,1.0)',
-            }
-        }
-        map.createPane('pane_oecd_0');
-        map.getPane('pane_oecd_0').style.zIndex = 400;
-        map.getPane('pane_oecd_0').style['mix-blend-mode'] = 'normal';
-        var layer_oecd_0 = new L.geoJson(json_oecd_0, {
-            attribution: '<a href=""></a>',
-            pane: 'pane_oecd_0',
-            onEachFeature: pop_oecd_0,
-            style: style_oecd_0_0,
-        });
-        bounds_group.addLayer(layer_oecd_0);
-        map.addLayer(layer_oecd_0);
-        function pop_KOLIBRIcountries_1(feature, layer) {
-            var popupContent = '<table>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['OBJECTID'] !== null ? Autolinker.link(String(feature.properties['OBJECTID'])) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['NAME'] !== null ? Autolinker.link(String(feature.properties['NAME'])) : '') + '</td>\
-                    </tr>\
-                </table>';
-            layer.bindPopup(popupContent, {maxHeight: 400});
-        }
-
-        function style_KOLIBRIcountries_1_0() {
-            return {
-                pane: 'pane_KOLIBRIcountries_1',
-                opacity: 1,
-                color: 'rgba(114,133,132,1.0)',
-                dashArray: '',
-                lineCap: 'butt',
-                lineJoin: 'miter',
-                weight: 1.0, 
-                fill: true,
-                fillOpacity: 1,
-                fillColor: 'rgba(31,120,180,1.0)',
-            }
-        }
-        var pattern_KOLIBRIcountries_1_1 = new L.StripePattern({
-            weight: 0.26,
-            spaceWeight: 2.0,
-            color: '#000000',
-            opacity: 1.0,
-            spaceOpacity: 0,
-            angle: 315
-        });
-        pattern_KOLIBRIcountries_1_1.addTo(map);
-        function style_KOLIBRIcountries_1_1() {
-            return {
-                pane: 'pane_KOLIBRIcountries_1',
-                stroke: false,
-                fillOpacity: 1,
-                fillPattern: pattern_KOLIBRIcountries_1_1
-            }
-        }
-        map.createPane('pane_KOLIBRIcountries_1');
-        map.getPane('pane_KOLIBRIcountries_1').style.zIndex = 401;
-        map.getPane('pane_KOLIBRIcountries_1').style['mix-blend-mode'] = 'normal';
-        var layer_KOLIBRIcountries_1 = new L.geoJson.multiStyle(json_KOLIBRIcountries_1, {
-            attribution: '<a href=""></a>',
-            pane: 'pane_KOLIBRIcountries_1',
-            onEachFeature: pop_KOLIBRIcountries_1,
-            styles: [style_KOLIBRIcountries_1_0,style_KOLIBRIcountries_1_1,]
-        });
-        bounds_group.addLayer(layer_KOLIBRIcountries_1);
-        map.addLayer(layer_KOLIBRIcountries_1);
-        var baseMaps = {
-			"Satellite view": basemap_esri,
-			"Standard view": basemap_carto,			
-        };        
-        L.control.layers(baseMaps,{'<img src="legend/KOLIBRIcountries_1.png" /> KOLIBRI countries':
-                         layer_KOLIBRIcountries_1,'<img src="legend/oecd_0.png" /> oecd': layer_oecd_0,}).addTo(map);
-        setBounds();
+	
+		cluster_groupKletterBoulderSpotsJSON.addTo(map);
+		cluster_groupKletterSpotsJSON.addTo(map);
+		cluster_groupBoulderSpotsJSON.addTo(map);
+		feature_group.addTo(map);
+		var title = new L.Control();
+		title.onAdd = function (map) {
+			this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+			this.update();
+			return this._div;
+        };
+        
+		var baseMaps = {
+			"Satellitenansicht": basemap_satellite,
+			"Straßenansicht": basemap_street,			
+        };
+        
+		L.control.layers(baseMaps,
+			{
+				"Klettern & Bouldern": cluster_groupKletterBoulderSpotsJSON,
+				"Klettern": cluster_groupKletterSpotsJSON,
+				"Bouldern": cluster_groupBoulderSpotsJSON
+			},
+			{ collapsed: true }).addTo(map);
+        
+        // legend		
+		var legend = L.control({ position: 'bottomright' });
+		legend.onAdd = function (map) {
+			var div = L.DomUtil.create('div', 'info legend');
+			grades = [" In- & Outdoor (Klettern & )Bouldern", " Indoor (Klettern & ) Bouldern", " Outdoor (Klettern & ) Bouldern", " In-Outdoor Klettern", " Indoor Klettern", " Outdoor Klettern"],
+				labels = ["data/bouldern_in_out.png", "data/bouldern_in.png", "data/bouldern_out.png", "data/climb_in_out.png", "data/climb_in.png", "data/climb_out.png"];
+			// loop through our density intervals and generate a label with a colored square for each interval
+			div.innerHTML += "<center><h3>Legend</h3></center>";
+			for (var i = 0; i < grades.length; i++) {
+				div.innerHTML +=
+					("<img src=" + labels[i] + " height='30' width='auto'>") + ('<span style="vertical-align:70%">' + grades[i] + "</span>") + '<br>';
+			}
+			return div;
+        };
+        
+		// legend controle
+		var toggleLegend = true;
+		var ourCustomControl = L.Control.extend({
+			options: {
+				position: 'topleft'
+			},
+			onAdd: function (map) {
+				var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+				container.style.backgroundColor = 'white';
+				container.style.backgroundImage = 'url(logo/map_legend.png)';
+				container.style.backgroundSize = "26px 26px";
+				container.style.width = '26px';
+				container.style.height = '26px';
+				container.title = 'View Map Legend';
+				container.onclick = function () {
+					if (toggleLegend === true) {
+						legend.addTo(map);
+						toggleLegend = false;
+					} else {
+						legend.removeFrom(map);
+						toggleLegend = true;
+					}
+				}
+				return container;
+			}
+		});
+		map.addControl(new ourCustomControl());
+        
         </script>
     </body>
 </html>
