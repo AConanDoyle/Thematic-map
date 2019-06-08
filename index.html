@@ -5,29 +5,35 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
         <meta name="mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		
         <link rel="stylesheet" href="http://unpkg.com/leaflet@1.0.3/dist/leaflet.css">
-        <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />	
-        <script src="http://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
+		<link rel='stylesheet' href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css'>
+		<link rel="stylesheet" href="css/L.Control.Sidebar.css">
+		
+		<script src="http://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
         <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/autolinker/3.0.5/Autolinker.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-hash/0.2.1/leaflet-hash.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-hash/0.2.1/leaflet-hash.min.js"></script>
+		<script src="js/Leaflet.CountrySelect.js"></script>
+		<script src="js/L.Control.Sidebar.js"></script>
 
         <style>
-
         html, body, #map {
             width: 100%;
             height: 100%;
             padding: 0;
             margin: 0;
         }
-
         </style>
         <title>Karte der Lageinformation</title>
     </head>
     <body>
         <div id="map">
-        </div>
+		</div>
+		<div id="sidebar">
+			<h1>leaflet-sidebar</h1>
+		</div>
         <script src="data/oecd_0.js"></script>
         <script src="data/KOLIBRIcountries_1.js"></script>
 
@@ -49,8 +55,8 @@
         // fullscrenn control
 		map.addControl(new L.Control.Fullscreen({
 			title: {
-				'false': 'View Fullscreen',
-				'true': 'Exit Fullscreen'
+				'false': 'Vollbild anzeigen',
+				'true': 'Vollbild beenden'
 			}
         }));
         
@@ -64,11 +70,27 @@
 				'</td></tr><tr><th scope="row">BROUTEN</th><td>' + String(feature.properties['BROUTEN']) + '</td></tr><tr><th scope="row">HOMEPAGE</th><td>' +
 				nullCheck(Autolinker.link(String(feature.properties['HOMEPAGE']), { truncate: 20}));
 			layer.bindPopup(popupContent);
-        }
-        
+		}
+		
+		// country select
+		var select = L.countrySelect({title:'Untersuchungsländer'}).addTo(map);
+			select.on('change', function (e) {
+				if (e.feature === undefined) {
+					return;
+				}
+				var country = L.geoJson(e.feature);
+				if (this.previousCountry != null) {
+					map.removeLayer(this.previousCountry);
+				}
+				this.previousCountry = country;
 
+				map.addLayer(country);
+				map.fitBounds(country.getBounds());
+
+			});
+        
 		// adds dataset KletterBoulderSpots
-		var exp_KletterBoulderSpotsJSON = new L.geoJson(exp_KletterBoulderSpots, {
+/* 		var exp_KletterBoulderSpotsJSON = new L.geoJson(exp_KletterBoulderSpots, {
 			onEachFeature: pop_Spots,
 			pointToLayer: function (feature, latlng) {
 				return L.marker(latlng, {
@@ -76,12 +98,19 @@
 						Autolinker.link(String(feature.properties['NUTZEN'])))
 				})
 			}
+		}); */
+
+		// creat sidebar
+		var sidebar = L.control.sidebar('sidebar', {
+			position: 'right',
+			closeButton: "true"
 		});
 
-	
-		cluster_groupKletterBoulderSpotsJSON.addTo(map);
-		cluster_groupKletterSpotsJSON.addTo(map);
-		cluster_groupBoulderSpotsJSON.addTo(map);
+		map.addControl(sidebar);
+
+		sidebar.setContent('test <b>:))</b> test');
+		sidebar.showe();
+
 		feature_group.addTo(map);
 		var title = new L.Control();
 		title.onAdd = function (map) {
@@ -92,18 +121,16 @@
         
 		var baseMaps = {
 			"Satellitenansicht": basemap_satellite,
-			"Straßenansicht": basemap_street,			
-        };
-        
+			"Straßenansicht": basemap_street						
+		};
+		
 		L.control.layers(baseMaps,
 			{
-				"Klettern & Bouldern": cluster_groupKletterBoulderSpotsJSON,
-				"Klettern": cluster_groupKletterSpotsJSON,
-				"Bouldern": cluster_groupBoulderSpotsJSON
+				// for data later ... 
 			},
 			{ collapsed: true }).addTo(map);
         
-        // legend		
+/*         // legend		
 		var legend = L.control({ position: 'bottomright' });
 		legend.onAdd = function (map) {
 			var div = L.DomUtil.create('div', 'info legend');
@@ -127,7 +154,7 @@
 			onAdd: function (map) {
 				var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
 				container.style.backgroundColor = 'white';
-				container.style.backgroundImage = 'url(logo/map_legend.png)';
+				container.style.backgroundImage = 'url(images/1.png)';
 				container.style.backgroundSize = "26px 26px";
 				container.style.width = '26px';
 				container.style.height = '26px';
@@ -144,7 +171,7 @@
 				return container;
 			}
 		});
-		map.addControl(new ourCustomControl());
+		map.addControl(new ourCustomControl()); */
         
         </script>
     </body>
