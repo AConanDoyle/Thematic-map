@@ -7,13 +7,12 @@
         <meta name="mobile-web-app-capable" content="yes">
 		<meta name="apple-mobile-web-app-capable" content="yes">
 		
-        <link rel="stylesheet" href="http://unpkg.com/leaflet@1.0.3/dist/leaflet.css">
+        <link rel="stylesheet" href="http://unpkg.com/leaflet@1.5.1/dist/leaflet.css">
 		<link rel='stylesheet' href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css'>
 		<link rel="stylesheet" href="css/L.Control.Sidebar.css">
 		
 		<script src="http://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
         <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/autolinker/3.0.5/Autolinker.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-hash/0.2.1/leaflet-hash.min.js"></script>
 		<script src="js/Leaflet.CountrySelect.js"></script>
 		<script src="js/L.Control.Sidebar.js"></script>
@@ -34,8 +33,8 @@
 		<div id="sidebar">
 			<h1>leaflet-sidebar</h1>
 		</div>
-        <script src="data/oecd_0.js"></script>
-        <script src="data/KOLIBRIcountries_1.js"></script>
+
+		<script src="data/test.geojson"></script>
 
         <script>
                    
@@ -59,19 +58,7 @@
 				'true': 'Vollbild beenden'
 			}
         }));
-        
-		function pop_Spots(feature, layer) {
-			var popupContent = '<table><tr><th scope="row">NAME</th><td>' + String(feature.properties['NAME']) + '</td></tr><tr><th scope="row">Adresse</th><td>' +
-				String(feature.properties['STRASSE']) + ' ' + nullCheck(String(feature.properties['HAUSNR'])) +
-				'</td></tr><tr><th scope="row">OEFFZEIT</th><td>' + nullCheck(String(feature.properties['OEFFZEIT'])) + '</td></tr><tr><th scope="row">PREIS</th><td>' +
-				String(feature.properties['PREIS']) + '</td></tr><tr><th scope="row">INOUT</th><td>' + String(feature.properties['INOUT']) +
-				'</td></tr><tr><th scope="row">NUTZEN</th><td>' + String(feature.properties['NUTZEN']) + '</td></tr><tr><th scope="row">MATERIAL</th><td>' +
-				String(feature.properties['MATERIAL']) + '</td></tr><tr><th scope="row">KROUTEN</th><td>' + String(feature.properties['KROUTEN']) +
-				'</td></tr><tr><th scope="row">BROUTEN</th><td>' + String(feature.properties['BROUTEN']) + '</td></tr><tr><th scope="row">HOMEPAGE</th><td>' +
-				nullCheck(Autolinker.link(String(feature.properties['HOMEPAGE']), { truncate: 20}));
-			layer.bindPopup(popupContent);
-		}
-		
+        		
 		// country select
 		var select = L.countrySelect({title:'Untersuchungsländer'}).addTo(map);
 			select.on('change', function (e) {
@@ -86,30 +73,23 @@
 
 				map.addLayer(country);
 				map.fitBounds(country.getBounds());
+				map.removeLayer(country);
 
 			});
         
 		// adds dataset KletterBoulderSpots
-/* 		var exp_KletterBoulderSpotsJSON = new L.geoJson(exp_KletterBoulderSpots, {
-			onEachFeature: pop_Spots,
-			pointToLayer: function (feature, latlng) {
-				return L.marker(latlng, {
-					icon: iconSelector(Autolinker.link(String(feature.properties['INOUT'])),
-						Autolinker.link(String(feature.properties['NUTZEN'])))
-				})
-			}
-		}); */
+ 		var data = new L.geoJson(test).addTo(map);
 
 		// creat sidebar
 		var sidebar = L.control.sidebar('sidebar', {
-			position: 'right',
-			closeButton: "true"
+			closeButton: "true",
+			position: "left"
 		});
 
 		map.addControl(sidebar);
 
 		sidebar.setContent('test <b>:))</b> test');
-		sidebar.showe();
+		sidebar.show();
 
 		feature_group.addTo(map);
 		var title = new L.Control();
@@ -126,53 +106,10 @@
 		
 		L.control.layers(baseMaps,
 			{
-				// for data later ... 
+				test 
 			},
 			{ collapsed: true }).addTo(map);
-        
-/*         // legend		
-		var legend = L.control({ position: 'bottomright' });
-		legend.onAdd = function (map) {
-			var div = L.DomUtil.create('div', 'info legend');
-			grades = [" In- & Outdoor (Klettern & )Bouldern", " Indoor (Klettern & ) Bouldern", " Outdoor (Klettern & ) Bouldern", " In-Outdoor Klettern", " Indoor Klettern", " Outdoor Klettern"],
-				labels = ["data/bouldern_in_out.png", "data/bouldern_in.png", "data/bouldern_out.png", "data/climb_in_out.png", "data/climb_in.png", "data/climb_out.png"];
-			// loop through our density intervals and generate a label with a colored square for each interval
-			div.innerHTML += "<center><h3>Legend</h3></center>";
-			for (var i = 0; i < grades.length; i++) {
-				div.innerHTML +=
-					("<img src=" + labels[i] + " height='30' width='auto'>") + ('<span style="vertical-align:70%">' + grades[i] + "</span>") + '<br>';
-			}
-			return div;
-        };
-        
-		// legend controle
-		var toggleLegend = true;
-		var ourCustomControl = L.Control.extend({
-			options: {
-				position: 'topleft'
-			},
-			onAdd: function (map) {
-				var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
-				container.style.backgroundColor = 'white';
-				container.style.backgroundImage = 'url(images/1.png)';
-				container.style.backgroundSize = "26px 26px";
-				container.style.width = '26px';
-				container.style.height = '26px';
-				container.title = 'View Map Legend';
-				container.onclick = function () {
-					if (toggleLegend === true) {
-						legend.addTo(map);
-						toggleLegend = false;
-					} else {
-						legend.removeFrom(map);
-						toggleLegend = true;
-					}
-				}
-				return container;
-			}
-		});
-		map.addControl(new ourCustomControl()); */
-        
+                
         </script>
     </body>
 </html>
