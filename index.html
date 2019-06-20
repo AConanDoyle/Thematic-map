@@ -1,115 +1,206 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
-        <meta name="mobile-web-app-capable" content="yes">
-		<meta name="apple-mobile-web-app-capable" content="yes">
-		
-        <link rel="stylesheet" href="http://unpkg.com/leaflet@1.5.1/dist/leaflet.css">
-		<link rel='stylesheet' href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css'>
-		<link rel="stylesheet" href="css/L.Control.Sidebar.css">
-		
-		<script src="http://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
-        <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-hash/0.2.1/leaflet-hash.min.js"></script>
-		<script src="js/Leaflet.CountrySelect.js"></script>
-		<script src="js/L.Control.Sidebar.js"></script>
 
-        <style>
-        html, body, #map {
-            width: 100%;
-            height: 100%;
-            padding: 0;
-            margin: 0;
-        }
-        </style>
-        <title>Karte der Lageinformation</title>
-    </head>
-    <body>
-        <div id="map">
-		</div>
-		<div id="sidebar">
-			<h1>leaflet-sidebar</h1>
-		</div>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-capable" content="yes">
 
-		<script src="data/test.geojson"></script>
+	<link rel="stylesheet" href="http://unpkg.com/leaflet@1.5.1/dist/leaflet.css">
+	<link rel='stylesheet'
+		href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css'>
+	<link rel="stylesheet" href="css/L.Control.Sidebar.css">
 
-        <script>
-                   
+	<script src="http://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
+	<script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-hash/0.2.1/leaflet-hash.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/leaflet.minichart@0.2.5/dist/leaflet.minichart.min.js"></script>
+
+	<script src="js/Leaflet.CountrySelect.js"></script>
+	<script src="js/L.Control.Sidebar.js"></script>
+
+	<style>
+		html,
+		body,
+		#map {
+			width: 100%;
+			height: 100%;
+			padding: 0;
+			margin: 0;
+		}
+	</style>
+	<title>Karte der Lageinformation</title>
+</head>
+
+<body>
+	<div id="map">
+	</div>
+	<div id="sidebar">
+		<h1>leaflet-sidebar</h1>
+	</div>
+
+	<script src="data/kolibri_sm_cat.geojson"></script>
+	<script src="data/kolibri_parti_info.geojson"></script>
+
+	<script>
+
 		var hash = new L.Hash(map);
-        var feature_group = new L.featureGroup([]);
-        var access_token = 'access_token=pk.eyJ1IjoiZmVvcyIsImEiOiJjandoa3E1ODQyN2NwNDhtcThna2RpbzdwIn0.1Igm1-YZfJKfGRVWzm2CkA';
-        var basemap_street = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/256/{z}/{x}/{y}?' + access_token),
-            basemap_satellite = L.tileLayer('https://api.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}.png?' + access_token);
+		var access_token = 'access_token=pk.eyJ1IjoiZmVvcyIsImEiOiJjandoa3E1ODQyN2NwNDhtcThna2RpbzdwIn0.1Igm1-YZfJKfGRVWzm2CkA';
+		var basemap_kolibri = L.tileLayer('https://api.mapbox.com/styles/v1/feos/cjwuotovl0s8k1cntt8f4dxfa/tiles/256/{z}/{x}/{y}?' + access_token),
+			basemap_street = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/light-v9/tiles/256/{z}/{x}/{y}?' + access_token);
 
 		var map = L.map('map', {
 			zoomControl: true,
 			maxZoom: 19,
-            layers: [basemap_satellite, basemap_street]
-        
+			layers: [basemap_street, basemap_kolibri]
+
 		}).fitBounds([[7.0, -136.0], [74.0, 47.0]]);
-        
-        // fullscrenn control
+
+		// fullscrenn control
 		map.addControl(new L.Control.Fullscreen({
 			title: {
 				'false': 'Vollbild anzeigen',
 				'true': 'Vollbild beenden'
 			}
-        }));
-        		
+		}));
+
 		// country select
-		var select = L.countrySelect({title:'Untersuchungsländer'}).addTo(map);
-			select.on('change', function (e) {
-				if (e.feature === undefined) {
-					return;
-				}
-				var country = L.geoJson(e.feature);
-				if (this.previousCountry != null) {
-					map.removeLayer(this.previousCountry);
-				}
-				this.previousCountry = country;
+		var select = L.countrySelect({ title: 'Untersuchungsländer' }).addTo(map);
+		select.on('change', function (e) {
+			if (e.feature === undefined) {
+				return;
+			}
+			var country = L.geoJson(e.feature);
+			if (this.previousCountry != null) {
+				map.removeLayer(this.previousCountry);
+			}
+			this.previousCountry = country;
 
-				map.addLayer(country);
-				map.fitBounds(country.getBounds());
-				map.removeLayer(country);
+			map.addLayer(country);
+			map.fitBounds(country.getBounds());
+			map.removeLayer(country);
 
-			});
-        
-		// adds dataset KletterBoulderSpots
- 		var data = new L.geoJson(test).addTo(map);
+		});
+
+		var colorSelectorSM = function (index_usages_sm) {
+			switch (true) {
+				case (index_usages_sm <= 1.5):
+					return "#d5efcfff";
+					break;
+				case (index_usages_sm > 1.5 && index_usages_sm <= 2.0):
+					return "#9ed898ff"
+					break;
+				case (index_usages_sm > 2.0 && index_usages_sm <= 2.5):
+					return "#54b567ff"
+					break;
+				case (index_usages_sm > 2.5 && index_usages_sm <= 3.0):
+					return "#1d8641ff"
+					break;
+				case (index_usages_sm > 3.0):
+					return "#00441bff"
+					break;
+				default:
+					return "grey";
+			}
+		};
+
+		var colorSelectorExpCat = function (exp_cat_5years_Yes) {
+			switch (true) {
+				case (exp_cat_5years_Yes >= 0.0 && exp_cat_5years_Yes <= 20.0):
+					return "#fef0d9ff";
+					break;
+				case (exp_cat_5years_Yes > 20.0 && exp_cat_5years_Yes <= 40.0):
+					return "#fdcc8aff"
+					break;
+				case (exp_cat_5years_Yes > 40.0 && exp_cat_5years_Yes <= 60.0):
+					return "#fc8d59ff"
+					break;
+				case (exp_cat_5years_Yes > 60.0 && exp_cat_5years_Yes <= 80.0):
+					return "#e34a33ff"
+					break;
+				case (exp_cat_5years_Yes > 80.0 && exp_cat_5years_Yes <= 100.0):
+					return "#b30000ff"
+					break;
+				default:
+					return "black";
+			}
+		};
 
 		// creat sidebar
 		var sidebar = L.control.sidebar('sidebar', {
 			closeButton: "true",
 			position: "left"
 		});
-
 		map.addControl(sidebar);
 
-		sidebar.setContent('test <b>:))</b> test');
-		sidebar.show();
+		// adds dataset Social Media
+		var layer_SM = new L.geoJson(kolibri_sm_cat, {
+			style: function (feature) {
+				return { color: colorSelectorSM(feature.properties.index_usages_sm), stroke: false };
+			}
+		})
+			.bindPopup(function (layer) {
+				return layer.feature.properties.index_usages_sm.toString();
+			}).addTo(map);
 
-		feature_group.addTo(map);
+		// adds dataset experince with catastroph
+		var layer_exp_cat = new L.geoJson(kolibri_sm_cat, {
+			style: function (feature) {
+				return { color: colorSelectorExpCat(feature.properties.exp_cat_5years_Yes), stroke: false };
+			}
+		})
+			.bindPopup(function (layer) {
+				return layer.feature.properties.exp_cat_5years_Yes.toString();
+			});
+
+		// adds dataset infoTyp
+		var layer_infoTyp = new L.FeatureGroup();
+		for (const i in kolibri_parti_info.features) {
+			var layer_infoTyp_single = L.minichart(
+				[kolibri_parti_info.features[i].properties.centerlat, kolibri_parti_info.features[i].properties.centerlong],
+				{
+					data: [parseInt(kolibri_parti_info.features[i].properties.infoTyp_established),
+						parseInt(kolibri_parti_info.features[i].properties.infoTyp_uninformed),
+							parseInt(kolibri_parti_info.features[i].properties.infoTyp_special)] ,
+
+					type: "pie", labels: ["Established", "Uninformed", "Special "],
+					colors: ["#7A8B99", "#91ADC2", "#A9DDD6"],
+					transitionTime: 2500
+				});
+			layer_infoTyp.addLayer(layer_infoTyp_single);
+		};
+
+		//layer_infoTyp.bindPopup(function (layer) {
+		//	return layer.feature.properties.infoTyp_established.toString();
+		//});
+
+		// sidebar.setContent('test <b>:))</b> test').show()
+
+		// ??? sidebar ??? 
 		var title = new L.Control();
 		title.onAdd = function (map) {
-			this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+			this._div = L.DomUtil.create('div', 'info');
 			this.update();
 			return this._div;
-        };
-        
-		var baseMaps = {
-			"Satellitenansicht": basemap_satellite,
-			"Straßenansicht": basemap_street						
 		};
-		
-		L.control.layers(baseMaps,
+
+		// layer controle
+		var baseMaps = {
+			"Straßenansicht": basemap_street,
+		};
+
+		L.control.layers(
 			{
-				test 
-			},
+				// "Kolibri": basemap_kolibri,
+				"Social medai Usages": layer_SM,
+				"Experince with catastroph within last 5 years": layer_exp_cat,
+				"Infotypen": layer_infoTyp
+			}, {},
 			{ collapsed: true }).addTo(map);
-                
-        </script>
-    </body>
+
+	</script>
+</body>
+
 </html>
