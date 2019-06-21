@@ -159,11 +159,13 @@
 		var layer_infoTyp = new L.FeatureGroup();
 		for (const i in kolibri_parti_info.features) {
 			var layer_infoTyp_single = L.minichart(
-				[kolibri_parti_info.features[i].properties.centerlat, kolibri_parti_info.features[i].properties.centerlong],
+				// center chart
+				[kolibri_parti_info.features[i].properties.centerlat,
+				kolibri_parti_info.features[i].properties.centerlong],
 				{
 					data: [parseInt(kolibri_parti_info.features[i].properties.infoTyp_established),
-						parseInt(kolibri_parti_info.features[i].properties.infoTyp_uninformed),
-							parseInt(kolibri_parti_info.features[i].properties.infoTyp_special)] ,
+					parseInt(kolibri_parti_info.features[i].properties.infoTyp_uninformed),
+					parseInt(kolibri_parti_info.features[i].properties.infoTyp_special)],
 
 					type: "pie", labels: ["Established", "Uninformed", "Special "],
 					colors: ["#7A8B99", "#91ADC2", "#A9DDD6"],
