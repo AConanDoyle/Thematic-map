@@ -135,7 +135,7 @@
 		});
 		map.addControl(sidebar);
 
-		// adds dataset Social Media
+		// add dataset Social Media
 		var layer_SM = new L.geoJson(kolibri_sm_cat, {
 			style: function (feature) {
 				return { color: colorSelectorSM(feature.properties.index_usages_sm), stroke: false };
@@ -144,11 +144,11 @@
 			.bindTooltip(function (layer) {
 				var value = layer.feature.properties.index_usages_sm || "no data"
 				return "Country: " + layer.feature.properties.NAME_0 +
-				"<br /> Administrative divisions: " + layer.feature.properties.NAME_1 + 
-				"<br /> Likely social media use: " + value;
-			}, {direction: "top", opacity: 0.7}).addTo(map);
+					"<br /> Administrative divisions: " + layer.feature.properties.NAME_1 +
+					"<br /> Likely social media use: " + value;
+			}, { direction: "top", opacity: 0.7 }).addTo(map);
 
-		// adds dataset experince with catastroph
+		// add dataset experince with catastroph
 		var layer_exp_cat = new L.geoJson(kolibri_sm_cat, {
 			style: function (feature) {
 				return { color: colorSelectorExpCat(feature.properties.exp_cat_5years_Yes), stroke: false };
@@ -157,11 +157,11 @@
 			.bindTooltip(function (layer) {
 				var value = layer.feature.properties.exp_cat_5years_Yes || "no data"
 				return "Country: " + layer.feature.properties.NAME_0 +
-				"<br /> Administrative divisions: " + layer.feature.properties.NAME_1 + 
-				"<br /> Experience with disaster events (last 5 years): " + Math.round(value)+ "%";
-			}, {direction: "top", opacity: 0.7});
+					"<br /> Administrative divisions: " + layer.feature.properties.NAME_1 +
+					"<br /> Experience with disaster events (last 5 years): " + Math.round(value) + "%";
+			}, { direction: "top", opacity: 0.7 });
 
-		// adds dataset infoTyp
+		// add dataset infoTyp
 		var layer_infoTyp = new L.FeatureGroup();
 		for (const i in kolibri_parti_info.features) {
 			var layer_infoTyp_single = L.minichart(
@@ -187,8 +187,38 @@
 					"<br /> Established: " + kolibri_parti_info.features[i].properties.infoTyp_established.toString()
 					+ "% <br /> Uninformed: " + kolibri_parti_info.features[i].properties.infoTyp_uninformed.toString() +
 					"% <br /> Special: " + kolibri_parti_info.features[i].properties.infoTyp_special.toString() + "%";
-			}, {direction: "top", opacity: 0.7}); 
+			}, { direction: "top", opacity: 0.7 });
 			layer_infoTyp.addLayer(layer_infoTyp_single);
+		};
+
+		// add dataset parti
+		var layer_parti = new L.FeatureGroup();
+		for (const i in kolibri_parti_info.features) {
+			var layer_parti_single = L.minichart(
+				// center chart
+				[kolibri_parti_info.features[i].properties.centerlat,
+				kolibri_parti_info.features[i].properties.centerlong],
+				{
+					data: [parseInt(kolibri_parti_info.features[i].properties.partiTyp_inactive),
+					parseInt(kolibri_parti_info.features[i].properties.partiTyp_altru),
+					parseInt(kolibri_parti_info.features[i].properties.partiTyp_extro)],
+
+					// format chart
+					type: "pie", /* labels: [kolibri_parti_info.features[i].properties.partiTyp_inactive, 
+					kolibri_parti_info.features[i].properties.partiTyp_altru,
+					kolibri_parti_info.features[i].properties.partiTyp_extro], */
+					labelMinSize: 8, width: 80,
+					colors: ["#7A8B99", "#91ADC2", "#A9DDD6"],
+					transitionTime: 2500
+				});
+
+			layer_parti_single.bindTooltip(function (layer) {
+				return "Country: " + kolibri_parti_info.features[i].properties.NAME_0.toString() +
+					"<br /> The Inactive: " + kolibri_parti_info.features[i].properties.partiTyp_inactive.toString()
+					+ "% <br /> The Altruists: " + kolibri_parti_info.features[i].properties.partiTyp_altru.toString() +
+					"% <br /> The Extroverts: " + kolibri_parti_info.features[i].properties.partiTyp_extro.toString() + "%";
+			}, { direction: "top", opacity: 0.7 });
+			layer_parti.addLayer(layer_parti_single);
 		};
 
 		// sidebar.setContent('test <b>:))</b> test').show()
@@ -211,8 +241,8 @@
 			baseMaps, {
 				"Likely social media use": layer_SM,
 				"Experience with disaster events (last 5 years)": layer_exp_cat,
-				"Infotypen": layer_infoTyp,
-
+				"Type of information": layer_infoTyp,
+				"Types of participation": layer_parti
 			}, { collapsed: true }).addTo(map);
 
 	</script>
