@@ -141,9 +141,12 @@
 				return { color: colorSelectorSM(feature.properties.index_usages_sm), stroke: false };
 			}
 		})
-			.bindPopup(function (layer) {
-				return layer.feature.properties.index_usages_sm.toString();
-			}).addTo(map);
+			.bindTooltip(function (layer) {
+				var value = layer.feature.properties.index_usages_sm || "no data"
+				return "Country: " + layer.feature.properties.NAME_0 +
+				"<br /> Administrative divisions: " + layer.feature.properties.NAME_1 + 
+				"<br /> Likely social media use: " + value;
+			}, {direction: "top", opacity: 0.7}).addTo(map);
 
 		// adds dataset experince with catastroph
 		var layer_exp_cat = new L.geoJson(kolibri_sm_cat, {
@@ -151,9 +154,12 @@
 				return { color: colorSelectorExpCat(feature.properties.exp_cat_5years_Yes), stroke: false };
 			}
 		})
-			.bindPopup(function (layer) {
-				return layer.feature.properties.exp_cat_5years_Yes.toString();
-			});
+			.bindTooltip(function (layer) {
+				var value = layer.feature.properties.exp_cat_5years_Yes || "no data"
+				return "Country: " + layer.feature.properties.NAME_0 +
+				"<br /> Administrative divisions: " + layer.feature.properties.NAME_1 + 
+				"<br /> Experience with disaster events (last 5 years): " + Math.round(value)+ "%";
+			}, {direction: "top", opacity: 0.7});
 
 		// adds dataset infoTyp
 		var layer_infoTyp = new L.FeatureGroup();
@@ -167,16 +173,23 @@
 					parseInt(kolibri_parti_info.features[i].properties.infoTyp_uninformed),
 					parseInt(kolibri_parti_info.features[i].properties.infoTyp_special)],
 
-					type: "pie", labels: ["Established", "Uninformed", "Special "],
+					// format chart
+					type: "pie", /* labels: [kolibri_parti_info.features[i].properties.infoTyp_established, 
+					kolibri_parti_info.features[i].properties.infoTyp_uninformed,
+					kolibri_parti_info.features[i].properties.infoTyp_special], */
+					labelMinSize: 8, width: 80,
 					colors: ["#7A8B99", "#91ADC2", "#A9DDD6"],
 					transitionTime: 2500
 				});
+
+			layer_infoTyp_single.bindTooltip(function (layer) {
+				return "Country: " + kolibri_parti_info.features[i].properties.NAME_0.toString() +
+					"<br /> Established: " + kolibri_parti_info.features[i].properties.infoTyp_established.toString()
+					+ "% <br /> Uninformed: " + kolibri_parti_info.features[i].properties.infoTyp_uninformed.toString() +
+					"% <br /> Special: " + kolibri_parti_info.features[i].properties.infoTyp_special.toString() + "%";
+			}, {direction: "top", opacity: 0.7}); 
 			layer_infoTyp.addLayer(layer_infoTyp_single);
 		};
-
-		//layer_infoTyp.bindPopup(function (layer) {
-		//	return layer.feature.properties.infoTyp_established.toString();
-		//});
 
 		// sidebar.setContent('test <b>:))</b> test').show()
 
@@ -191,16 +204,16 @@
 		// layer controle
 		var baseMaps = {
 			"Straßenansicht": basemap_street,
+			"Kolibri": basemap_kolibri
 		};
 
 		L.control.layers(
-			{
-				// "Kolibri": basemap_kolibri,
-				"Social medai Usages": layer_SM,
-				"Experince with catastroph within last 5 years": layer_exp_cat,
-				"Infotypen": layer_infoTyp
-			}, {},
-			{ collapsed: true }).addTo(map);
+			baseMaps, {
+				"Likely social media use": layer_SM,
+				"Experience with disaster events (last 5 years)": layer_exp_cat,
+				"Infotypen": layer_infoTyp,
+
+			}, { collapsed: true }).addTo(map);
 
 	</script>
 </body>
