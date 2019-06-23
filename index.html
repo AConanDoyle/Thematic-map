@@ -135,6 +135,27 @@
 		});
 		map.addControl(sidebar);
 
+		// sidebar controle
+		var sidebarControl = L.Control.extend({
+			options: {
+				position: 'topleft'
+			},
+			onAdd: function (map) {
+				var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+				container.style.backgroundColor = 'white';
+				container.style.backgroundImage = 'url(images/info.png)';
+				container.style.backgroundSize = "30px 30px";
+				container.style.width = '30px';
+				container.style.height = '30px';
+				container.title = 'View map legend & explanatory notes';
+				container.onclick = function () {
+					sidebar.toggle(); 
+				}
+				return container;
+			}
+		});
+		map.addControl(new sidebarControl());
+
 		// add dataset Social Media
 		var layer_SM = new L.geoJson(kolibri_sm_cat, {
 			style: function (feature) {
@@ -191,7 +212,7 @@
 			layer_infoTyp.addLayer(layer_infoTyp_single);
 		};
 
-		// add dataset parti
+		// add dataset participationTyps
 		var layer_parti = new L.FeatureGroup();
 		for (const i in kolibri_parti_info.features) {
 			var layer_parti_single = L.minichart(
@@ -219,16 +240,6 @@
 					"% <br /> The Extroverts: " + kolibri_parti_info.features[i].properties.partiTyp_extro.toString() + "%";
 			}, { direction: "top", opacity: 0.7 });
 			layer_parti.addLayer(layer_parti_single);
-		};
-
-		// sidebar.setContent('test <b>:))</b> test').show()
-
-		// ??? sidebar ??? 
-		var title = new L.Control();
-		title.onAdd = function (map) {
-			this._div = L.DomUtil.create('div', 'info');
-			this.update();
-			return this._div;
 		};
 
 		// layer controle
