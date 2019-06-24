@@ -38,7 +38,15 @@
 	<div id="map">
 	</div>
 	<div id="sidebar">
-		<h1>leaflet-sidebar</h1>
+		<h1>Karte der Lageinformation</h1>
+		<p>Legend:
+			<br />....
+			<br />....
+		</p>
+		<h2>Social Media</h2>
+		<h2>experince with catastroph</h2>
+		<h2>infoTyp</h2>
+		<h2>participationTyps</h2>
 	</div>
 
 	<script src="data/kolibri_sm_cat.geojson"></script>
@@ -61,13 +69,13 @@
 		// fullscrenn control
 		map.addControl(new L.Control.Fullscreen({
 			title: {
-				'false': 'Vollbild anzeigen',
-				'true': 'Vollbild beenden'
+				'false': 'View fullscreen',
+				'true': 'Exit fullscreen'
 			}
 		}));
 
 		// country select
-		var select = L.countrySelect({ title: 'Untersuchungsländer' }).addTo(map);
+		var select = L.countrySelect({ title: 'Pick a country', position: 'topright', }).addTo(map);
 		select.on('change', function (e) {
 			if (e.feature === undefined) {
 				return;
@@ -149,7 +157,7 @@
 				container.style.height = '30px';
 				container.title = 'View map legend & explanatory notes';
 				container.onclick = function () {
-					sidebar.toggle(); 
+					sidebar.toggle();
 				}
 				return container;
 			}
@@ -159,7 +167,12 @@
 		// add dataset Social Media
 		var layer_SM = new L.geoJson(kolibri_sm_cat, {
 			style: function (feature) {
-				return { color: colorSelectorSM(feature.properties.index_usages_sm), stroke: false };
+				return {
+					color: colorSelectorSM(feature.properties.index_usages_sm),
+					weight: 1,
+					dashArray: '5',
+					fillOpacity: 0.5
+				};
 			}
 		})
 			.bindTooltip(function (layer) {
@@ -172,7 +185,12 @@
 		// add dataset experince with catastroph
 		var layer_exp_cat = new L.geoJson(kolibri_sm_cat, {
 			style: function (feature) {
-				return { color: colorSelectorExpCat(feature.properties.exp_cat_5years_Yes), stroke: false };
+				return {
+					color: colorSelectorExpCat(feature.properties.exp_cat_5years_Yes),
+					weight: 1,
+					dashArray: '5',
+					fillOpacity: 0.5
+				};
 			}
 		})
 			.bindTooltip(function (layer) {
@@ -242,14 +260,11 @@
 			layer_parti.addLayer(layer_parti_single);
 		};
 
-		// layer controle
-		var baseMaps = {
-			"Straßenansicht": basemap_street,
-			"Kolibri": basemap_kolibri
-		};
-
 		L.control.layers(
-			baseMaps, {
+			{
+				"Straßenansicht": basemap_street,
+				"Kolibri": basemap_kolibri
+			}, {
 				"Likely social media use": layer_SM,
 				"Experience with disaster events (last 5 years)": layer_exp_cat,
 				"Type of information": layer_infoTyp,
