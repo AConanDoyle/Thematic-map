@@ -56,13 +56,12 @@
 
 		var hash = new L.Hash(map);
 		var access_token = 'access_token=pk.eyJ1IjoiZmVvcyIsImEiOiJjandoa3E1ODQyN2NwNDhtcThna2RpbzdwIn0.1Igm1-YZfJKfGRVWzm2CkA';
-		var basemap_kolibri = L.tileLayer('https://api.mapbox.com/styles/v1/feos/cjwuotovl0s8k1cntt8f4dxfa/tiles/256/{z}/{x}/{y}?' + access_token),
-			basemap_street = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/light-v9/tiles/256/{z}/{x}/{y}?' + access_token);
+		var basemap = L.tileLayer('https://api.mapbox.com/styles/v1/feos/cjxaf1go60e461cp3rmlsf7jm/tiles/256/{z}/{x}/{y}?' + access_token)
 
 		var map = L.map('map', {
 			zoomControl: true,
 			maxZoom: 19,
-			layers: [basemap_street, basemap_kolibri]
+			layers: [basemap]
 
 		}).fitBounds([[7.0, -136.0], [74.0, 47.0]]);
 
@@ -75,7 +74,7 @@
 		}));
 
 		// country select
-		var select = L.countrySelect({ title: 'Pick a country', position: 'topright', }).addTo(map);
+		/* var select = L.countrySelect({ title: 'Pick a country', position: 'topright', }).addTo(map);
 		select.on('change', function (e) {
 			if (e.feature === undefined) {
 				return;
@@ -90,7 +89,7 @@
 			map.fitBounds(country.getBounds());
 			map.removeLayer(country);
 
-		});
+		}); */
 
 		var colorSelectorSM = function (index_usages_sm) {
 			switch (true) {
@@ -176,7 +175,12 @@
 			}
 		})
 			.bindTooltip(function (layer) {
-				var value = layer.feature.properties.index_usages_sm || "no data"
+				if (layer.feature.properties.index_usages_sm !== null){
+					var value = layer.feature.properties.index_usages_sm.toFixed(1);
+				}
+				else{
+					var value = "no data";
+				}
 				return "Country: " + layer.feature.properties.NAME_0 +
 					"<br /> Administrative divisions: " + layer.feature.properties.NAME_1 +
 					"<br /> Likely social media use: " + value;
@@ -194,10 +198,15 @@
 			}
 		})
 			.bindTooltip(function (layer) {
-				var value = layer.feature.properties.exp_cat_5years_Yes || "no data"
+				if (layer.feature.properties.exp_cat_5years_Yes !== null){
+					var value = Math.round(layer.feature.properties.index_usages_sm) + "%";
+				}
+				else{
+					var value = "no data";
+				}
 				return "Country: " + layer.feature.properties.NAME_0 +
 					"<br /> Administrative divisions: " + layer.feature.properties.NAME_1 +
-					"<br /> Experience with disaster events (last 5 years): " + Math.round(value) + "%";
+					"<br /> Experience with disaster events (last 5 years): " + value;
 			}, { direction: "top", opacity: 0.7 });
 
 		// add dataset infoTyp
@@ -262,14 +271,11 @@
 
 		L.control.layers(
 			{
-				"Straßenansicht": basemap_street,
-				"Kolibri": basemap_kolibri
-			}, {
 				"Likely social media use": layer_SM,
 				"Experience with disaster events (last 5 years)": layer_exp_cat,
 				"Type of information": layer_infoTyp,
 				"Types of participation": layer_parti
-			}, { collapsed: true }).addTo(map);
+			}, {}, { collapsed: true }).addTo(map);
 
 	</script>
 </body>
