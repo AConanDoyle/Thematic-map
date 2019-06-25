@@ -12,14 +12,16 @@
 	<link rel='stylesheet'
 		href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css'>
 	<link rel="stylesheet" href="css/L.Control.Sidebar.css">
+	<link rel="stylesheet" href="css/L.Control.HtmlLegend.css" />
 
 	<script src="http://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
 	<script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-hash/0.2.1/leaflet-hash.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/leaflet.minichart@0.2.5/dist/leaflet.minichart.min.js"></script>
 
-	<script src="js/Leaflet.CountrySelect.js"></script>
 	<script src="js/L.Control.Sidebar.js"></script>
+	<script src="js/L.Control.HtmlLegend.js"></script>
+
 
 	<style>
 		html,
@@ -30,19 +32,29 @@
 			padding: 0;
 			margin: 0;
 		}
+
+		.infoBox {
+			padding: 6px 8px;
+			font: 14px/16px Arial, Helvetica, sans-serif;
+			background: white;
+			background: rgba(255, 255, 255, 0.8);
+			box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+			border-radius: 5px;
+		}
+
+		.infoBox h4 {
+			margin: 0 0 5px;
+			color: #777;
+		}
 	</style>
-	<title>Karte der Lageinformation</title>
+	<title>Kolibri - project results</title>
 </head>
 
 <body>
 	<div id="map">
 	</div>
 	<div id="sidebar">
-		<h1>Karte der Lageinformation</h1>
-		<p>Legend:
-			<br />....
-			<br />....
-		</p>
+		<h1>Kolibri - project results</h1>
 		<h2>Social Media</h2>
 		<h2>experince with catastroph</h2>
 		<h2>infoTyp</h2>
@@ -73,39 +85,37 @@
 			}
 		}));
 
-		// country select
-		/* var select = L.countrySelect({ title: 'Pick a country', position: 'topright', }).addTo(map);
-		select.on('change', function (e) {
-			if (e.feature === undefined) {
-				return;
-			}
-			var country = L.geoJson(e.feature);
-			if (this.previousCountry != null) {
-				map.removeLayer(this.previousCountry);
-			}
-			this.previousCountry = country;
+		// infoBox for mouseover
+		var infoBox = L.control();
+		infoBox.onAdd = function (map) {
+			this._div = L.DomUtil.create('div', 'infoBox');
+			this.update();
+			return this._div;
+		};
 
-			map.addLayer(country);
-			map.fitBounds(country.getBounds());
-			map.removeLayer(country);
+		// method that we will use to update the control based on feature properties passed
+		infoBox.update = function (props) {
+			this._div.innerHTML = '<h4>Likely social media use</h4>' + (props ?
+				'<b>' + layer.feature.properties.NAME_0 + '</b> <br />' + props.density + '%'
+				: 'Hover over a state');
+		};
+		infoBox.addTo(map);
 
-		}); */
-
-		var colorSelectorSM = function (index_usages_sm) {
+		var colorSelectorSM = function (i) {
 			switch (true) {
-				case (index_usages_sm <= 1.5):
+				case (i !== "no data" && i <= 1.5):
 					return "#d5efcfff";
 					break;
-				case (index_usages_sm > 1.5 && index_usages_sm <= 2.0):
+				case (i > 1.5 && i <= 2.0):
 					return "#9ed898ff"
 					break;
-				case (index_usages_sm > 2.0 && index_usages_sm <= 2.5):
+				case (i > 2.0 && i <= 2.5):
 					return "#54b567ff"
 					break;
-				case (index_usages_sm > 2.5 && index_usages_sm <= 3.0):
+				case (i > 2.5 && i <= 3.0):
 					return "#1d8641ff"
 					break;
-				case (index_usages_sm > 3.0):
+				case (i > 3.0):
 					return "#00441bff"
 					break;
 				default:
@@ -113,21 +123,21 @@
 			}
 		};
 
-		var colorSelectorExpCat = function (exp_cat_5years_Yes) {
+		var colorSelectorExpCat = function (e) {
 			switch (true) {
-				case (exp_cat_5years_Yes >= 0.0 && exp_cat_5years_Yes <= 20.0):
+				case (e >= 0.0 && e <= 20.0):
 					return "#fef0d9ff";
 					break;
-				case (exp_cat_5years_Yes > 20.0 && exp_cat_5years_Yes <= 40.0):
+				case (e > 20.0 && e <= 40.0):
 					return "#fdcc8aff"
 					break;
-				case (exp_cat_5years_Yes > 40.0 && exp_cat_5years_Yes <= 60.0):
+				case (e > 40.0 && e <= 60.0):
 					return "#fc8d59ff"
 					break;
-				case (exp_cat_5years_Yes > 60.0 && exp_cat_5years_Yes <= 80.0):
+				case (e > 60.0 && e <= 80.0):
 					return "#e34a33ff"
 					break;
-				case (exp_cat_5years_Yes > 80.0 && exp_cat_5years_Yes <= 100.0):
+				case (e > 80.0 && e <= 100.0):
 					return "#b30000ff"
 					break;
 				default:
@@ -151,10 +161,12 @@
 				var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
 				container.style.backgroundColor = 'white';
 				container.style.backgroundImage = 'url(images/info.png)';
-				container.style.backgroundSize = "30px 30px";
+				container.style.backgroundSize = "26px 26px";
 				container.style.width = '30px';
 				container.style.height = '30px';
-				container.title = 'View map legend & explanatory notes';
+				container.style.backgroundPosition = "center center";
+				container.style.cursor = "pointer";
+				container.title = 'View explanatory notes';
 				container.onclick = function () {
 					sidebar.toggle();
 				}
@@ -165,20 +177,14 @@
 
 		// add dataset Social Media
 		var layer_SM = new L.geoJson(kolibri_sm_cat, {
-			style: function (feature) {
-				return {
-					color: colorSelectorSM(feature.properties.index_usages_sm),
-					weight: 1,
-					dashArray: '5',
-					fillOpacity: 0.5
-				};
-			}
+			style: styleSM,
+			onEachFeature: onEachFeature
 		})
 			.bindTooltip(function (layer) {
-				if (layer.feature.properties.index_usages_sm !== null){
+				if (layer.feature.properties.index_usages_sm !== null) {
 					var value = layer.feature.properties.index_usages_sm.toFixed(1);
 				}
-				else{
+				else {
 					var value = "no data";
 				}
 				return "Country: " + layer.feature.properties.NAME_0 +
@@ -186,9 +192,22 @@
 					"<br /> Likely social media use: " + value;
 			}, { direction: "top", opacity: 0.7 }).addTo(map);
 
+		function styleSM(feature) {
+			if (feature.properties.index_usages_sm === null)
+				var value = "no data"
+			else
+				var value = feature.properties.index_usages_sm;
+			return {
+				color: colorSelectorSM(value),
+				weight: 1,
+				dashArray: '5',
+				fillOpacity: 0.5
+			};
+		}
+
 		// add dataset experince with catastroph
 		var layer_exp_cat = new L.geoJson(kolibri_sm_cat, {
-			style: function (feature) {
+			style: function c(feature) {
 				return {
 					color: colorSelectorExpCat(feature.properties.exp_cat_5years_Yes),
 					weight: 1,
@@ -198,10 +217,10 @@
 			}
 		})
 			.bindTooltip(function (layer) {
-				if (layer.feature.properties.exp_cat_5years_Yes !== null){
+				if (layer.feature.properties.exp_cat_5years_Yes !== null) {
 					var value = Math.round(layer.feature.properties.index_usages_sm) + "%";
 				}
-				else{
+				else {
 					var value = "no data";
 				}
 				return "Country: " + layer.feature.properties.NAME_0 +
@@ -269,13 +288,104 @@
 			layer_parti.addLayer(layer_parti_single);
 		};
 
+		function zoomToFeature(e) {
+			map.fitBounds(e.target.getBounds());
+		}
+
+		function onEachFeature(feature, layer) {
+			layer.on({
+				mouseover: highlightFeature,
+				// mouseout: resetHighlight,
+				click: zoomToFeature
+			});
+		}
+
+		function resetHighlight(e) {
+			layer_SM.resetStyle(e.target);
+		}
+
+		function highlightFeature(e) {
+			var layer = e.target;
+
+			layer.setStyle({
+				weight: 5,
+				dashArray: '',
+			});
+
+			if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+				layer.bringToFront();
+			}
+		}
+
+
+		// layer controle
 		L.control.layers(
 			{
 				"Likely social media use": layer_SM,
 				"Experience with disaster events (last 5 years)": layer_exp_cat,
 				"Type of information": layer_infoTyp,
 				"Types of participation": layer_parti
-			}, {}, { collapsed: true }).addTo(map);
+			}, null, { collapsed: true }).addTo(map);
+
+		var legendSM = L.control.htmllegend({
+			position: 'bottomright',
+			legends: [{
+				name: 'Likely social media use',
+				layer: layer_SM,
+				elements: [{
+					label: '< 1,5',
+					html: '',
+					style: {
+						'background-color': '#d5efcfff',
+						'width': '15px',
+						'height': '15px'
+					}
+				}, {
+					label: '1,5 - 2,0',
+					html: '',
+					style: {
+						'background-color': '#9ed898ff',
+						'width': '15px',
+						'height': '15px'
+					}
+				}, {
+					label: '2,0 - 2,5',
+					html: '',
+					style: {
+						'background-color': '#54b567ff',
+						'width': '15px',
+						'height': '15px'
+					}
+				}, {
+					label: '2,5 - 3,0',
+					html: '',
+					style: {
+						'background-color': '#1d8641ff',
+						'width': '15px',
+						'height': '15px'
+					}
+				}, {
+					label: '> 3,0',
+					html: '',
+					style: {
+						'background-color': '#00441bff',
+						'width': '15px',
+						'height': '15px'
+					}
+				}, {
+					label: 'no data',
+					html: '',
+					style: {
+						'background-color': 'grey',
+						'width': '15px',
+						'height': '15px'
+					}
+				}]
+			}],
+			collapseSimple: false,
+			disableVisibilityControls: true
+		})
+		map.addControl(legendSM)
 
 	</script>
 </body>
