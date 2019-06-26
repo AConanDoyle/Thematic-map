@@ -86,20 +86,20 @@
 		}));
 
 		// infoBox for mouseover
-		var infoBox = L.control();
-		infoBox.onAdd = function (map) {
-			this._div = L.DomUtil.create('div', 'infoBox');
-			this.update();
-			return this._div;
-		};
+		/* 		var infoBox = L.control();
+				infoBox.onAdd = function (map) {
+					this._div = L.DomUtil.create('div', 'infoBox');
+					this.update();
+					return this._div;
+				}; */
 
 		// method that we will use to update the control based on feature properties passed
-		infoBox.update = function (props) {
-			this._div.innerHTML = '<h4>Likely social media use</h4>' + (props ?
-				'<b>' + layer.feature.properties.NAME_0 + '</b> <br />' + props.density + '%'
-				: 'Hover over a state');
-		};
-		infoBox.addTo(map);
+		/* 		infoBox.update = function (props) {
+					this._div.innerHTML = '<h4>Likely social media use</h4>' + (props ?
+						'<b>' + layer.feature.properties.NAME_0 + '</b> <br />' + props.density + '%'
+						: 'Hover over a state');
+				};
+				infoBox.addTo(map); */
 
 		var colorSelectorSM = function (i) {
 			switch (true) {
@@ -125,7 +125,7 @@
 
 		var colorSelectorExpCat = function (e) {
 			switch (true) {
-				case (e >= 0.0 && e <= 20.0):
+				case (e !== "no data" && e <= 20.0):
 					return "#fee5d9";
 					break;
 				case (e > 20.0 && e <= 40.0):
@@ -209,25 +209,37 @@
 
 		// add dataset experince with catastroph
 		var layer_exp_cat = new L.geoJson(kolibri_sm_cat, {
-			style: function c(feature) {
-				return {
-					color: colorSelectorExpCat(feature.properties.exp_cat_5years_Yes),
-					weight: 1,
-					dashArray: '5',
-					fillOpacity: 0.5
-				};
-			}
-		})
-			.bindTooltip(function (layer) {
-				if (layer.feature.properties.exp_cat_5years_Yes !== null) {
-					var value = Math.round(layer.feature.properties.index_usages_sm) + "%";
+			style: function(feature) {
+				if (feature.properties.exp_cat_5years_Yes !== null) {
+					var value = Math.round(feature.properties.exp_cat_5years_Yes);
 				}
 				else {
 					var value = "no data";
 				}
+				return {
+					fillColor: colorSelectorExpCat(value),
+					fillOpacity: 0.5,
+					weight: 1,
+					opacity: 1,
+					color: "white",
+					dashArray: '5'
+				};
+			},
+			onEachFeature: onEachFeature
+		})
+			.bindTooltip(function (layer) {
+				if (layer.feature.properties.exp_cat_5years_Yes !== null) {
+					var value = Math.round(layer.feature.properties.exp_cat_5years_Yes) + "%";
+					var valueN = layer.feature.properties.index_usages_sm_N;
+				}
+				else {
+					var valueN = "no data";
+					var value = "no data";
+				}
 				return "Country: " + layer.feature.properties.NAME_0 +
 					"<br /> Administrative divisions: " + layer.feature.properties.NAME_1 +
-					"<br /> Experience with disaster events (last 5 years): " + value;
+					"<br /> Experience with disaster events (last 5 years): " + value +
+					"<br /> Number of respondents (N): " + valueN;
 			}, { direction: "top", opacity: 0.7 });
 
 		// add dataset infoTyp
@@ -243,11 +255,11 @@
 					parseInt(kolibri_parti_info.features[i].properties.infoTyp_special)],
 
 					// format chart
-					type: "pie", /* labels: [kolibri_parti_info.features[i].properties.infoTyp_established, 
-					kolibri_parti_info.features[i].properties.infoTyp_uninformed,
-					kolibri_parti_info.features[i].properties.infoTyp_special], */
+					type: "pie", /* labels: [kolibri_parti_info.features[i].properties.infoTyp_established + "%", 
+					kolibri_parti_info.features[i].properties.infoTyp_uninformed + "%",
+					kolibri_parti_info.features[i].properties.infoTyp_special], */ 
 					labelMinSize: 8, width: 80,
-					colors: ["#7A8B99", "#91ADC2", "#A9DDD6"],
+					colors: ["#deebf7", "#9ecae1", "#3182bd"],
 					transitionTime: 2500
 				});
 
@@ -277,7 +289,7 @@
 					kolibri_parti_info.features[i].properties.partiTyp_altru,
 					kolibri_parti_info.features[i].properties.partiTyp_extro], */
 					labelMinSize: 8, width: 80,
-					colors: ["#7A8B99", "#91ADC2", "#A9DDD6"],
+					colors: ["#deebf7", "#9ecae1", "#3182bd"],
 					transitionTime: 2500
 				});
 
@@ -302,10 +314,6 @@
 			});
 		}
 
-		function resetHighlight(e) {
-			layer_SM.resetStyle(e.target);
-		}
-
 		function highlightFeature(e) {
 			var layer = e.target;
 
@@ -319,6 +327,20 @@
 			}
 		}
 
+		function resetHighlight(e) {
+			if (map.hasLayer(layer_SM)) {
+				layer_SM.resetStyle(e.target);
+			}
+			if (map.hasLayer(layer_exp_cat)) {
+				layer_exp_cat.resetStyle(e.target);
+			}
+			if (map.hasLayer(layer_infoTyp)) {
+				layer_infoTyp.resetStyle(e.target);
+			}
+			if (map.hasLayer(layer_parti)) {
+				layer_parti.resetStyle(e.target);
+			}
+		}
 
 		// layer controle
 		L.control.layers(
@@ -329,6 +351,7 @@
 				"Types of participation": layer_parti
 			}, null, { collapsed: true }).addTo(map);
 
+		// legends 
 		var legend_SM = L.control.htmllegend({
 			position: 'bottomright',
 			legends: [{
@@ -387,7 +410,6 @@
 			collapseSimple: false,
 			disableVisibilityControls: true
 		}).addTo(map);
-
 		var legend_exp_cat = L.control.htmllegend({
 			position: 'bottomright',
 			legends: [{
@@ -446,8 +468,74 @@
 			collapseSimple: false,
 			disableVisibilityControls: true
 		}).addTo(map);
-
-		// map.addControl(legend_SM);
+		var legend_infotyp = L.control.htmllegend({
+			position: 'bottomright',
+			legends: [{
+				name: 'Experience with disaster events (last 5 years)',
+				layer: layer_infoTyp,
+				elements: [{
+					label: 'Established',
+					html: '',
+					style: {
+						'background-color': '#deebf7',
+						'width': '15px',
+						'height': '15px'
+					}
+				}, {
+					label: 'Uninformed',
+					html: '',
+					style: {
+						'background-color': '#9ecae1',
+						'width': '15px',
+						'height': '15px'
+					}
+				}, {
+					label: 'Special',
+					html: '',
+					style: {
+						'background-color': '#3182bd',
+						'width': '15px',
+						'height': '15px'
+					}
+				}]
+			}],
+			collapseSimple: false,
+			disableVisibilityControls: true
+		}).addTo(map);
+		var legend_infotyp = L.control.htmllegend({
+			position: 'bottomright',
+			legends: [{
+				name: 'Types of participation',
+				layer: layer_parti,
+				elements: [{
+					label: 'The Inactive',
+					html: '',
+					style: {
+						'background-color': '#deebf7',
+						'width': '15px',
+						'height': '15px'
+					}
+				}, {
+					label: 'The Altruists',
+					html: '',
+					style: {
+						'background-color': '#9ecae1',
+						'width': '15px',
+						'height': '15px'
+					}
+				}, {
+					label: 'The Extroverts',
+					html: '',
+					style: {
+						'background-color': '#3182bd',
+						'width': '15px',
+						'height': '15px'
+					}
+				}]
+			}],
+			collapseSimple: false,
+			disableVisibilityControls: true
+		}).addTo(map);
 
 	</script>
 </body>
