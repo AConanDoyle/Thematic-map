@@ -22,7 +22,6 @@
 	<script src="js/L.Control.Sidebar.js"></script>
 	<script src="js/L.Control.HtmlLegend.js"></script>
 
-
 	<style>
 		html,
 		body,
@@ -33,7 +32,7 @@
 			margin: 0;
 		}
 
-		.infoBox {
+/* 		.infoBox {
 			padding: 6px 8px;
 			font: 14px/16px Arial, Helvetica, sans-serif;
 			background: white;
@@ -45,7 +44,7 @@
 		.infoBox h4 {
 			margin: 0 0 5px;
 			color: #777;
-		}
+		} */
 	</style>
 	<title>Kolibri - project results</title>
 </head>
@@ -74,7 +73,6 @@
 			zoomControl: true,
 			maxZoom: 19,
 			layers: [basemap]
-
 		}).fitBounds([[7.0, -136.0], [74.0, 47.0]]);
 
 		// fullscrenn control
@@ -84,22 +82,6 @@
 				'true': 'Exit fullscreen'
 			}
 		}));
-
-		// infoBox for mouseover
-		/* 		var infoBox = L.control();
-				infoBox.onAdd = function (map) {
-					this._div = L.DomUtil.create('div', 'infoBox');
-					this.update();
-					return this._div;
-				}; */
-
-		// method that we will use to update the control based on feature properties passed
-		/* 		infoBox.update = function (props) {
-					this._div.innerHTML = '<h4>Likely social media use</h4>' + (props ?
-						'<b>' + layer.feature.properties.NAME_0 + '</b> <br />' + props.density + '%'
-						: 'Hover over a state');
-				};
-				infoBox.addTo(map); */
 
 		var colorSelectorSM = function (i) {
 			switch (true) {
@@ -177,39 +159,40 @@
 
 		// add dataset Social Media
 		var layer_SM = new L.geoJson(kolibri_sm_cat, {
-			style: styleSM,
+			style: function (feature) {
+				if (feature.properties.index_usages_sm === null)
+					var value = "no data"
+				else
+					var value = feature.properties.index_usages_sm;
+				return {
+					fillColor: colorSelectorSM(value).toString(),
+					fillOpacity: 0.5,
+					weight: 1,
+					opacity: 1,
+					color: "white",
+					dashArray: '5'
+				};
+			},
 			onEachFeature: onEachFeature
 		})
 			.bindTooltip(function (layer) {
 				if (layer.feature.properties.index_usages_sm !== null) {
 					var value = layer.feature.properties.index_usages_sm.toFixed(1);
+					var valueN = layer.feature.properties.index_usages_sm_N;
 				}
 				else {
+					var valueN = "no data";
 					var value = "no data";
 				}
 				return "Country: " + layer.feature.properties.NAME_0 +
 					"<br /> Administrative divisions: " + layer.feature.properties.NAME_1 +
-					"<br /> Likely social media use: " + value;
+					"<br /> Likely social media use: " + value +
+					"<br /> Number of respondents (N): " + + valueN;
 			}, { direction: "top", opacity: 0.7 }).addTo(map);
-
-		function styleSM(feature) {
-			if (feature.properties.index_usages_sm === null)
-				var value = "no data"
-			else
-				var value = feature.properties.index_usages_sm;
-			return {
-				fillColor: colorSelectorSM(value).toString(),
-				fillOpacity: 0.5,
-				weight: 1,
-				opacity: 1,
-				color: "white",
-				dashArray: '5'
-			};
-		}
 
 		// add dataset experince with catastroph
 		var layer_exp_cat = new L.geoJson(kolibri_sm_cat, {
-			style: function(feature) {
+			style: function (feature) {
 				if (feature.properties.exp_cat_5years_Yes !== null) {
 					var value = Math.round(feature.properties.exp_cat_5years_Yes);
 				}
@@ -244,6 +227,19 @@
 
 		// add dataset infoTyp
 		var layer_infoTyp = new L.FeatureGroup();
+		layer_infoTyp.addLayer(L.geoJSON(kolibri_parti_info, {
+			style: function (feature) {
+				return {
+					fillColor: "grey",
+					fillOpacity: 0.2,
+					weight: 1,
+					opacity: 1,
+					color: "white",
+					dashArray: '5'
+				};
+			},
+			onEachFeature: onEachFeaturePie
+		}));
 		for (const i in kolibri_parti_info.features) {
 			var layer_infoTyp_single = L.minichart(
 				// center chart
@@ -257,7 +253,7 @@
 					// format chart
 					type: "pie", /* labels: [kolibri_parti_info.features[i].properties.infoTyp_established + "%", 
 					kolibri_parti_info.features[i].properties.infoTyp_uninformed + "%",
-					kolibri_parti_info.features[i].properties.infoTyp_special], */ 
+					kolibri_parti_info.features[i].properties.infoTyp_special], */
 					labelMinSize: 8, width: 80,
 					colors: ["#deebf7", "#9ecae1", "#3182bd"],
 					transitionTime: 2500
@@ -274,6 +270,19 @@
 
 		// add dataset participationTyps
 		var layer_parti = new L.FeatureGroup();
+		layer_parti.addLayer(L.geoJSON(kolibri_parti_info, {
+			style: function (feature) {
+				return {
+					fillColor: "grey",
+					fillOpacity: 0.2,
+					weight: 1,
+					opacity: 1,
+					color: "white",
+					dashArray: '5'
+				};
+			},
+			onEachFeature: onEachFeaturePie
+		}));
 		for (const i in kolibri_parti_info.features) {
 			var layer_parti_single = L.minichart(
 				// center chart
@@ -302,16 +311,22 @@
 			layer_parti.addLayer(layer_parti_single);
 		};
 
-		function zoomToFeature(e) {
-			map.fitBounds(e.target.getBounds());
-		}
-
 		function onEachFeature(feature, layer) {
 			layer.on({
 				mouseover: highlightFeature,
 				mouseout: resetHighlight,
 				click: zoomToFeature
 			});
+		}
+
+		function onEachFeaturePie(feature, layer) {
+			layer.on({
+				click: zoomToFeature
+			});
+		}
+
+		function zoomToFeature(e) {
+			map.fitBounds(e.target.getBounds());
 		}
 
 		function highlightFeature(e) {
@@ -325,6 +340,7 @@
 			if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
 				layer.bringToFront();
 			}
+			//infoBox.update(layer.feature.properties);
 		}
 
 		function resetHighlight(e) {
@@ -334,13 +350,53 @@
 			if (map.hasLayer(layer_exp_cat)) {
 				layer_exp_cat.resetStyle(e.target);
 			}
-			if (map.hasLayer(layer_infoTyp)) {
+			/* if (map.hasLayer(layer_infoTyp)) {
 				layer_infoTyp.resetStyle(e.target);
 			}
 			if (map.hasLayer(layer_parti)) {
 				layer_parti.resetStyle(e.target);
-			}
+			} */
+			// infoBox.update();
 		}
+
+		// infoBox for mouseover
+		/* 		var infoBox = L.control();
+				infoBox.onAdd = function (map) {
+					this._div = L.DomUtil.create('div', 'infoBox');
+					this.update();
+					return this._div;
+				}; */
+
+		/* 		// method that we will use to update the control based on feature properties passed
+				infoBox.update = function (props) {
+					if (map.hasLayer(layer_SM)) {
+						if (props.index_usages_sm !== null) {
+							var value = props.index_usages_sm.toFixed(1);
+						}
+						else {
+							var value = "no data";
+						}
+						this._div.innerHTML = "Country: " + props.NAME_0 +
+							"<br /> Administrative divisions: " + props.NAME_1 +
+							"<br /> Likely social media use: " + value;
+					} if (map.hasLayer(layer_exp_cat)) {
+		
+					}
+					if (map.hasLayer(layer_infoTyp)) {
+		
+					}
+					if (map.hasLayer(layer_parti)) {
+		
+					}
+		
+				};
+				infoBox.addTo(map); */
+
+/* 		map.on('click', function () {
+			if (map.hasLayer(layer_infoTyp) || map.hasLayer(layer_parti)) {
+				onEachFeature(layer_infoTyp);
+			}
+		}) */
 
 		// layer controle
 		L.control.layers(
