@@ -322,7 +322,6 @@
 			if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
 				layer.bringToFront();
 			}
-			//infoBox.update(layer.feature.properties);
 		}
 
 		function resetHighlight(e) {
@@ -343,7 +342,7 @@
 				"Types of participation": layer_parti
 			}, null, { collapsed: true }).addTo(map);
 
-		// legends 
+		// legends
 		var legend_SM = L.control.htmllegend({
 			position: 'bottomright',
 			legends: [{
@@ -399,7 +398,6 @@
 					}
 				}]
 			}],
-			collapseSimple: false,
 			disableVisibilityControls: true
 		}).addTo(map);
 		var legend_exp_cat = L.control.htmllegend({
@@ -457,7 +455,6 @@
 					}
 				}]
 			}],
-			collapseSimple: false,
 			disableVisibilityControls: true
 		}).addTo(map);
 		var legend_infotyp = L.control.htmllegend({
@@ -491,7 +488,6 @@
 					}
 				}]
 			}],
-			collapseSimple: false,
 			disableVisibilityControls: true
 		}).addTo(map);
 		var legend_infotyp = L.control.htmllegend({
@@ -525,7 +521,6 @@
 					}
 				}]
 			}],
-			collapseSimple: false,
 			disableVisibilityControls: true
 		}).addTo(map);
 
