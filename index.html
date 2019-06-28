@@ -31,20 +31,6 @@
 			padding: 0;
 			margin: 0;
 		}
-
-/* 		.infoBox {
-			padding: 6px 8px;
-			font: 14px/16px Arial, Helvetica, sans-serif;
-			background: white;
-			background: rgba(255, 255, 255, 0.8);
-			box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-			border-radius: 5px;
-		}
-
-		.infoBox h4 {
-			margin: 0 0 5px;
-			color: #777;
-		} */
 	</style>
 	<title>Kolibri - project results</title>
 </head>
@@ -251,9 +237,7 @@
 					parseInt(kolibri_parti_info.features[i].properties.infoTyp_special)],
 
 					// format chart
-					type: "pie", /* labels: [kolibri_parti_info.features[i].properties.infoTyp_established + "%", 
-					kolibri_parti_info.features[i].properties.infoTyp_uninformed + "%",
-					kolibri_parti_info.features[i].properties.infoTyp_special], */
+					type: "pie",
 					labelMinSize: 8, width: 80,
 					colors: ["#deebf7", "#9ecae1", "#3182bd"],
 					transitionTime: 2500
@@ -294,9 +278,7 @@
 					parseInt(kolibri_parti_info.features[i].properties.partiTyp_extro)],
 
 					// format chart
-					type: "pie", /* labels: [kolibri_parti_info.features[i].properties.partiTyp_inactive, 
-					kolibri_parti_info.features[i].properties.partiTyp_altru,
-					kolibri_parti_info.features[i].properties.partiTyp_extro], */
+					type: "pie",
 					labelMinSize: 8, width: 80,
 					colors: ["#deebf7", "#9ecae1", "#3182bd"],
 					transitionTime: 2500
@@ -350,53 +332,7 @@
 			if (map.hasLayer(layer_exp_cat)) {
 				layer_exp_cat.resetStyle(e.target);
 			}
-			/* if (map.hasLayer(layer_infoTyp)) {
-				layer_infoTyp.resetStyle(e.target);
-			}
-			if (map.hasLayer(layer_parti)) {
-				layer_parti.resetStyle(e.target);
-			} */
-			// infoBox.update();
 		}
-
-		// infoBox for mouseover
-		/* 		var infoBox = L.control();
-				infoBox.onAdd = function (map) {
-					this._div = L.DomUtil.create('div', 'infoBox');
-					this.update();
-					return this._div;
-				}; */
-
-		/* 		// method that we will use to update the control based on feature properties passed
-				infoBox.update = function (props) {
-					if (map.hasLayer(layer_SM)) {
-						if (props.index_usages_sm !== null) {
-							var value = props.index_usages_sm.toFixed(1);
-						}
-						else {
-							var value = "no data";
-						}
-						this._div.innerHTML = "Country: " + props.NAME_0 +
-							"<br /> Administrative divisions: " + props.NAME_1 +
-							"<br /> Likely social media use: " + value;
-					} if (map.hasLayer(layer_exp_cat)) {
-		
-					}
-					if (map.hasLayer(layer_infoTyp)) {
-		
-					}
-					if (map.hasLayer(layer_parti)) {
-		
-					}
-		
-				};
-				infoBox.addTo(map); */
-
-/* 		map.on('click', function () {
-			if (map.hasLayer(layer_infoTyp) || map.hasLayer(layer_parti)) {
-				onEachFeature(layer_infoTyp);
-			}
-		}) */
 
 		// layer controle
 		L.control.layers(
