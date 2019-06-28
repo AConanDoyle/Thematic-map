@@ -181,13 +181,13 @@
 					var valueN = layer.feature.properties.index_usages_sm_N;
 				}
 				else {
-					var valueN = "no data";
 					var value = "no data";
+					var valueN = "no data";
 				}
 				return "Country: " + layer.feature.properties.NAME_0 +
 					"<br /> Administrative divisions: " + layer.feature.properties.NAME_1 +
 					"<br /> Likely social media use: " + value +
-					"<br /> Number of respondents (N): " + + valueN;
+					"<br /> Number of respondents (N): " + valueN;
 			}, { direction: "top", opacity: 0.7 }).addTo(map);
 
 		// add dataset experince with catastroph
