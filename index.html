@@ -195,7 +195,8 @@
 
 		var hash = new L.Hash(map);
 		var access_token = 'access_token=pk.eyJ1IjoiZmVvcyIsImEiOiJjandoa3E1ODQyN2NwNDhtcThna2RpbzdwIn0.1Igm1-YZfJKfGRVWzm2CkA';
-		var basemap = L.tileLayer('https://api.mapbox.com/styles/v1/feos/cjxaf1go60e461cp3rmlsf7jm/tiles/256/{z}/{x}/{y}?' + access_token)
+		var basemap = L.tileLayer('https://api.mapbox.com/styles/v1/feos/cjxaf1go60e461cp3rmlsf7jm/tiles/256/{z}/{x}/{y}?' + access_token, 
+		{attribution: '© <a href="https://apps.mapbox.com/feedback/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'});
 
 		var map = L.map('map', {
 			zoomControl: true,
