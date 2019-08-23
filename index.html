@@ -9,52 +9,191 @@
 	<meta name="apple-mobile-web-app-capable" content="yes">
 
 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css">
-	<link rel='stylesheet'
-		href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css'>
+	<!-- 	<link rel='stylesheet'
+		href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css'> -->
+<!-- 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.css"> -->
 	<link rel="stylesheet" href="css/L.Control.Sidebar.css">
 	<link rel="stylesheet" href="css/L.Control.HtmlLegend.css" />
+	<link rel="stylesheet" href="css/main.css" />
 
 	<script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
-	<script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
+	<!-- 	<script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
+ -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-hash/0.2.1/leaflet-hash.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/leaflet.minichart@0.2.5/dist/leaflet.minichart.min.js"></script>
+	<!-- <script src="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.js"></script> -->
 
 	<script src="js/L.Control.Sidebar.js"></script>
 	<script src="js/L.Control.HtmlLegend.js"></script>
 
-	<style>
-		html,
-		body,
-		#map {
-			width: 100%;
-			height: 100%;
-			padding: 0;
-			margin: 0;
-		}
-	</style>
-	<title>Kolibri - research findings</title>
+	<title>Webmap KOLIBRI</title>
 </head>
 
 <body>
 	<div id="map">
 	</div>
 	<div id="sidebar">
-		<h1>Kolibri - project results</h1>
-		<p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et
-			dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.</p>
-		<h2>Social Media Usages</h2>
-		<p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et
-			dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.</p>
-		<h2>Experience with disaster events within the last 5 years</h2>
-		<p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et
-			dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.</p>
+		<h1>Research project KOLIBRI</h1>
+		<p>As part of the research project “International comparison of communicating situation reports on behalf of
+			civil protection authorities (KOLIBRI)” we were interested in how the public finds and shares disaster
+			information during events such as storms, floodings, earthquakes or heat/cold waves. </p>
+		<p>To address these questions we conducted a representative online-survey in nine countries in October 2018. The
+			participants were asked to answer questions regarding their information (sharing) behavior in a disaster
+			situation. Therefore, we provided them with the following storm scenario: There is a violent storm where you
+			live with catastrophic consequences.
+			There are severe damages in your area. However, the power supply is still working as usual. You are on your
+			own at home.</p>
+		<p>Based on our findings we aimed at developing recommendations for a communication strategy that enhances
+			communication of situation reports by the German civil protection authorities in a forward-looking and
+			innovative way.</p>
+		<h2>Experience with disaster events </h2>
+		<p>Percentage of respondents, who experienced one or more of the following disaster events in the last five
+			years: Power cut lasting more than 72 hours, Extreme storm, Flooding, Major fire/forest fire, Attack,
+			shooting, Extreme heat wave / cold wave, Earthquake</p>
+		<p>Question: Have you been affected by the following events in the last five years?</p>
+		<p>Answer format: Yes, No</p>
+		<h2>Social Media Use</h2>
+		<p>Likelihood of using social media to get information about a storm event. The map displays the mean value of
+			participants’ likelihood to use Twitter, Facebook, Instagram and YouTube.</p>
+		<p>Question: How likely is it that you would use the following social media channels to find out about such a
+			situation or a similar situation? </p>
+		<p>Answer format: 1 = “very unlikely” to 5 = “very likely”</p>
 		<h2>How does the population find out about an event?</h2>
-		<p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et
-			dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.</p>
-		<h2>How does the population participate in the communication of situation information?</h2>
-		<p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et
-			dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.</p>
-		<!-- 		<details>
+		<p>Results of a cluster analysis to derive a typology of information types among the public in all nine
+			countries (n = 9126). Assessed information sources were personal contacts, tv news, online news, print news,
+			websites of emergency agencies, (internet) radio, emergency calls, apps of emergency services, public
+			information hotline, teletext, social media.</p>
+		<p>Classics = Use rather tv or online news, personal contacts, websites of emergency agencies and less social
+			media to get information about disaster situations.</p>
+		<p>Inactives = Use all assessed information sources less than other information types during disaster
+			situations. </p>
+		<p>Multisided = Use broadest media repertoire to get information during disaster situations, especially
+			disaster-specific information channels such as websites and apps of emergency agencies, public information
+			hotlines and social media. </p>
+		<h2>How does the public share disaster information via social media?</h2>
+		<p>Results of a cluster analysis to derive a typology of participation types among the public in all nine
+			countries (n = 8090). Relevant variables were likelihood of using different social media channels (e.g.
+			facebook, twitter, messenger services) to share information, reasons for sharing disaster information
+			(socializing, status seeking, entertainment, information seeking, distrust in information from media or
+			emergency services) as well as past and future sharing behavior. </p>
+		<p>Altruists = Share disaster information mainly via facebook and messenger services. They do so to socialize
+			and help others. They were less active in the past, but would share more information during future
+			situations if they knew how this could contribute to disaster management. </p>
+		<p>Extroverts = Use a variety of social media channels to share disaster information. They rather want to
+			perceived as valuable by others and have rather less trust in information from media or emergency services.
+			They were already sharing information during past events and would share more information during future
+			situations if they knew how this could contribute to disaster management.</p>
+		<p>Inactives = Would rather not share disaster information with others via social media and have no interest to
+			do so in the future. </p>
+		<h2>Communication strategy good practice </h2>
+		<p>The displayed results are findings from qualitative expert interviews with representatives from emergency
+			services and public agencies in each country as well as a qualitative content analysis of strategy documents
+			in 2017/2018. They describe some good practices for emergency services to communicate with the public during
+			disaster events.</p>
+		<table>
+			<tr>
+				<td>AT</td>
+				<td>
+					<ul>
+						<li>Use public information channels that are compatible across agencies.</li>
+						<li>Provide multiagency situation picture in a filtered version to the public via website.</li>
+						<li>Use communication channels that are already used by the public.</li>
+						<li>Implementation of disaster information app (“KATWARN”) and SMS services.</li>
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<td>DK</td>
+				<td>
+					<ul>
+						<li>Implementation of disaster information app (“Mobilvarsling“).</li>
+						<li>Use Twitter to provide journalists directly and fast with information from authorities.</li>
+						<li>Identify and train social-media-talented staff of authorities to be prepared to support
+							crisis communication activities during disaster situations.</li>
+						<li>Integrate the public as multipliers of relevant disaster information.</li>
+						<li>Educate the public regarding sharing disaster information online.</li>
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<td>FR</td>
+				<td>
+					<ul>
+						<li>Implementation of disaster information app (“Système d’alerte et d’information des
+							populations“).</li>
+						<li>Communicate quickly and transparent what authorities do to manage the disaster situation.
+						</li>
+						<li>Use appealing infographics e. g. about disaster management facts that are likely to be
+							shared via social media.</li>
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<td>IT</td>
+				<td>
+					<ul>
+						<li>Adapt communication channels that are already used by the public.</li>
+						<li>Information via SMS or audio messages sent to landline or smart-phones and messenger
+							services.</li>
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<td>NL</td>
+				<td>
+					<ul>
+						<li>Use a surroundings analysis to develop a communication strategy and constantly adapt this
+							strategy based on public’s information needs and perception of the event.</li>
+						<li>Implementation of cell broadcast service (“NL alert”) and event-specific webseites
+							(“crisis.nl”).
+						</li>
+						<li>Use Twitter to provide journalists directly and fast with information from authorities.</li>
+						<li>Provide multiagency situation picture to the public via website.</li>
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<td>PL</td>
+				<td>
+					<ul>
+						<li>Adapt information strategy to media / journalists’ needs.</li>
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<td>UK</td>
+				<td>
+					<ul>
+						<li>Develop a generic communication strategy, that can be adapted to various disaster
+							situations.</li>
+						<li>Focus on digital / social media channels.</li>
+						<li>Monitor social media 24/7.</li>
+						<li>Monitor and integrate new technology developments into authorities communication strategies.
+						</li>
+						<li>Provide information as quickly as you can.</li>
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<td>USA</td>
+				<td>
+					<ul>
+						<li>Don’t over rely on digital channels. Also work closely with community leaders, interest
+							groups and various networks to reach most of the population.</li>
+						<li>Use communication systems, that integrate a variety of information channels (e.g. “Notify
+							NYC”)</li>
+						<li>Promote registration of persons with special needs to be better able to inform them during
+							disasters.</li>
+						<li>Use appealing infographics and videos that are likely to be shared via social media.</li>
+						<li>Live-stream snippets of authorities’ internal briefings that are suitable for public
+							information.</li>
+						<li>Mythbusting: Identify common rumors and prepare material with correct information to be
+							published during an event.</li>
+					</ul>
+				</td>
+			</tr>
+		</table>
+		<!-- <details>
 			<summary>Open Source Licenses</summary>
 			<h4>Leaflet.fullscreen</h4>
 			<p>
@@ -86,7 +225,8 @@
 				ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 				OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 			</p>
-			<p><h4>leaflet.minichart</h4>
+			<p>
+				<h4>leaflet.minichart</h4>
 				leaflet.minichart: A leaflet plugin to embded charts on a leaflet map
 				Copyright © 2016 RTE Réseau de transport d’électricité
 
@@ -164,7 +304,8 @@
 				OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 				WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 			</p>
-			<p><h4>leaflet-sidebar</h4>
+			<p>
+				<h4>leaflet-sidebar</h4>
 				The MIT License (MIT)
 
 				Copyright (c) 2013 Tobias Bieniek
@@ -204,13 +345,18 @@
 			layers: [basemap]
 		}).fitBounds([[7.0, -136.0], [74.0, 47.0]]);
 
-		// fullscrenn control
-		map.addControl(new L.Control.Fullscreen({
-			title: {
-				'false': 'View fullscreen',
-				'true': 'Exit fullscreen'
-			}
-		}));
+		// fullscreen control
+		/* 		map.addControl(new L.Control.Fullscreen({
+					title: {
+						'false': 'View fullscreen',
+						'true': 'Exit fullscreen'
+					}
+				})); */
+
+/* 		L.easyButton('fa-globe', function (btn, map) {
+			var win = window.open("https://userpage.fu-berlin.de/zlab/index.html", '_blank');
+			win.focus();
+		}).addTo(map); */
 
 		var colorSelectorSM = function (i) {
 			switch (true) {
@@ -388,9 +534,9 @@
 
 			layer_infoTyp_single.bindTooltip(function (layer) {
 				return "Country: " + kolibri_parti_info.features[i].properties.NAME_0.toString() +
-					"<br /> Established: " + kolibri_parti_info.features[i].properties.infoTyp_established.toString()
-					+ "% <br /> Uninformed: " + kolibri_parti_info.features[i].properties.infoTyp_uninformed.toString() +
-					"% <br /> Special: " + kolibri_parti_info.features[i].properties.infoTyp_special.toString() + "%";
+					"<br /> Classics: " + kolibri_parti_info.features[i].properties.infoTyp_established.toString()
+					+ "% <br /> Inactives: " + kolibri_parti_info.features[i].properties.infoTyp_uninformed.toString() +
+					"% <br /> Multisided: " + kolibri_parti_info.features[i].properties.infoTyp_special.toString() + "%";
 			}, { direction: "top", opacity: 0.7 });
 			layer_infoTyp.addLayer(layer_infoTyp_single);
 		};
@@ -481,8 +627,8 @@
 			{
 				"Likely social media use": layer_SM,
 				"Experience with disaster events (last 5 years)": layer_exp_cat,
-				"Type of information": layer_infoTyp,
-				"Types of participation": layer_parti
+				"Information types": layer_infoTyp,
+				"Participation types": layer_parti
 			}, null, { collapsed: false }).addTo(map);
 
 		// legends
@@ -603,10 +749,10 @@
 		var legend_infotyp = L.control.htmllegend({
 			position: 'topright',
 			legends: [{
-				name: 'Experience with disaster events (last 5 years)',
+				name: 'Information types“ ',
 				layer: layer_infoTyp,
 				elements: [{
-					label: 'Established',
+					label: 'Classics',
 					html: '',
 					style: {
 						'background-color': '#deebf7',
@@ -614,7 +760,7 @@
 						'height': '15px'
 					}
 				}, {
-					label: 'Uninformed',
+					label: 'Inactives',
 					html: '',
 					style: {
 						'background-color': '#9ecae1',
@@ -622,7 +768,7 @@
 						'height': '15px'
 					}
 				}, {
-					label: 'Special',
+					label: 'Multisided',
 					html: '',
 					style: {
 						'background-color': '#3182bd',
@@ -636,7 +782,7 @@
 		var legend_infotyp = L.control.htmllegend({
 			position: 'topright',
 			legends: [{
-				name: 'Types of participation',
+				name: 'Participation types',
 				layer: layer_parti,
 				elements: [{
 					label: 'The Inactive',
