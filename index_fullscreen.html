@@ -9,11 +9,14 @@
 	<meta name="apple-mobile-web-app-capable" content="yes">
 
 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css">
+	<link rel='stylesheet'
+		href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css'>
 	<link rel="stylesheet" href="css/L.Control.Sidebar.css">
 	<link rel="stylesheet" href="css/L.Control.HtmlLegend.css" />
 	<link rel="stylesheet" href="css/main.css" />
 
 	<script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
+	<script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-hash/0.2.1/leaflet-hash.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/leaflet.minichart@0.2.5/dist/leaflet.minichart.min.js"></script>
@@ -340,29 +343,13 @@
 			layers: [basemap]
 		}).fitBounds([[7.0, -136.0], [74.0, 47.0]]);
 
-
-		// Add button for new tab
-		// fullscreen hack for CMS
-		var ourCustomControl = L.Control.extend({
-			options: {
-				position: 'topleft'
-			},
-			onAdd: function (map) {
-				var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
-				container.style.backgroundColor = 'white';
-				container.style.backgroundImage = 'url(images/newTab.png)';
-				container.style.backgroundSize = "30px 30px";
-				container.style.width = '30px';
-				container.style.height = '30px';
-				container.title = 'View in new Tab';
-				container.onclick = function () {
-					var win = window.open("https://userpage.fu-berlin.de/zlab/index_fullscreen.html", '_blank');
-			win.focus();
-				}
-				return container;
+		// fullscreen control
+		map.addControl(new L.Control.Fullscreen({
+			title: {
+				'false': 'View fullscreen',
+				'true': 'Exit fullscreen'
 			}
-		});
-		map.addControl(new ourCustomControl());
+		}));
 
 		var colorSelectorSM = function (i) {
 			switch (true) {
