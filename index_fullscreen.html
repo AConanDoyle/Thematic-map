@@ -88,109 +88,6 @@
 			services and public agencies in each country as well as a qualitative content analysis of strategy documents
 			in 2017/2018. They describe some good practices for emergency services to communicate with the public during
 			disaster events.</p>
-		<table>
-			<tr>
-				<td>AT</td>
-				<td>
-					<ul>
-						<li>Use public information channels that are compatible across agencies.</li>
-						<li>Provide multiagency situation picture in a filtered version to the public via website.</li>
-						<li>Use communication channels that are already used by the public.</li>
-						<li>Implementation of disaster information app (“KATWARN”) and SMS services.</li>
-					</ul>
-				</td>
-			</tr>
-			<tr>
-				<td>DK</td>
-				<td>
-					<ul>
-						<li>Implementation of disaster information app (“Mobilvarsling“).</li>
-						<li>Use Twitter to provide journalists directly and fast with information from authorities.</li>
-						<li>Identify and train social-media-talented staff of authorities to be prepared to support
-							crisis communication activities during disaster situations.</li>
-						<li>Integrate the public as multipliers of relevant disaster information.</li>
-						<li>Educate the public regarding sharing disaster information online.</li>
-					</ul>
-				</td>
-			</tr>
-			<tr>
-				<td>FR</td>
-				<td>
-					<ul>
-						<li>Implementation of disaster information app (“Système d’alerte et d’information des
-							populations“).</li>
-						<li>Communicate quickly and transparent what authorities do to manage the disaster situation.
-						</li>
-						<li>Use appealing infographics e. g. about disaster management facts that are likely to be
-							shared via social media.</li>
-					</ul>
-				</td>
-			</tr>
-			<tr>
-				<td>IT</td>
-				<td>
-					<ul>
-						<li>Adapt communication channels that are already used by the public.</li>
-						<li>Information via SMS or audio messages sent to landline or smart-phones and messenger
-							services.</li>
-					</ul>
-				</td>
-			</tr>
-			<tr>
-				<td>NL</td>
-				<td>
-					<ul>
-						<li>Use a surroundings analysis to develop a communication strategy and constantly adapt this
-							strategy based on public’s information needs and perception of the event.</li>
-						<li>Implementation of cell broadcast service (“NL alert”) and event-specific webseites
-							(“crisis.nl”).
-						</li>
-						<li>Use Twitter to provide journalists directly and fast with information from authorities.</li>
-						<li>Provide multiagency situation picture to the public via website.</li>
-					</ul>
-				</td>
-			</tr>
-			<tr>
-				<td>PL</td>
-				<td>
-					<ul>
-						<li>Adapt information strategy to media / journalists’ needs.</li>
-					</ul>
-				</td>
-			</tr>
-			<tr>
-				<td>UK</td>
-				<td>
-					<ul>
-						<li>Develop a generic communication strategy, that can be adapted to various disaster
-							situations.</li>
-						<li>Focus on digital / social media channels.</li>
-						<li>Monitor social media 24/7.</li>
-						<li>Monitor and integrate new technology developments into authorities communication strategies.
-						</li>
-						<li>Provide information as quickly as you can.</li>
-					</ul>
-				</td>
-			</tr>
-			<tr>
-				<td>USA</td>
-				<td>
-					<ul>
-						<li>Don’t over rely on digital channels. Also work closely with community leaders, interest
-							groups and various networks to reach most of the population.</li>
-						<li>Use communication systems, that integrate a variety of information channels (e.g. “Notify
-							NYC”)</li>
-						<li>Promote registration of persons with special needs to be better able to inform them during
-							disasters.</li>
-						<li>Use appealing infographics and videos that are likely to be shared via social media.</li>
-						<li>Live-stream snippets of authorities’ internal briefings that are suitable for public
-							information.</li>
-						<li>Mythbusting: Identify common rumors and prepare material with correct information to be
-							published during an event.</li>
-					</ul>
-				</td>
-			</tr>
-		</table>
 		<!-- <details>
 			<summary>Open Source Licenses</summary>
 			<h4>Leaflet.fullscreen</h4>
@@ -454,7 +351,7 @@
 				}
 				return "Country: " + layer.feature.properties.NAME_0 +
 					"<br /> Administrative divisions: " + layer.feature.properties.NAME_1 +
-					"<br /> Likely social media use: " + value +
+					"<br /> Social media use: " + value +
 					"<br /> Number of respondents (N): " + valueN;
 			}, { direction: "top", opacity: 0.7 }).addTo(map);
 
@@ -575,6 +472,32 @@
 			layer_parti.addLayer(layer_parti_single);
 		};
 
+		// add dataset commuStrat
+		var layer_commuStrat = new L.geoJSON(kolibri_parti_info, {
+			style: function (feature) {
+				return {
+					fillColor: "grey",
+					fillOpacity: 0.2,
+					weight: 1,
+					opacity: 1,
+					color: "white",
+					dashArray: '5'
+				};
+			},
+			onEachFeature: onEachFeature,
+			// filter for germany (no data)
+			filter: function (feature) {
+				if (feature.properties.NAME_0 === "Germany") return false
+				else{
+					return true
+				}
+			}
+		}).bindTooltip(function (layer) {
+			return "Country: " + layer.feature.properties.NAME_0 +
+				"<br /> " + layer.feature.properties.commuStrat
+		}, { direction: "top", opacity: 0.7 });
+
+		// functions for Features
 		function onEachFeature(feature, layer) {
 			layer.on({
 				mouseover: highlightFeature,
@@ -613,22 +536,26 @@
 			if (map.hasLayer(layer_exp_cat)) {
 				layer_exp_cat.resetStyle(e.target);
 			}
+			if (map.hasLayer(layer_commuStrat)) {
+				layer_commuStrat.resetStyle(e.target);
+			}
 		}
 
 		// layer controle
 		L.control.layers(
 			{
-				"Likely social media use": layer_SM,
+				"Social media use": layer_SM,
 				"Experience with disaster events (last 5 years)": layer_exp_cat,
 				"Information types": layer_infoTyp,
-				"Participation types": layer_parti
+				"Participation types": layer_parti,
+				"Communication strategies": layer_commuStrat
 			}, null, { collapsed: false }).addTo(map);
 
 		// legends
 		var legend_SM = L.control.htmllegend({
 			position: 'topright',
 			legends: [{
-				name: 'Likely social media use',
+				name: 'Social media use',
 				layer: layer_SM,
 				elements: [{
 					label: '< 1,5',
