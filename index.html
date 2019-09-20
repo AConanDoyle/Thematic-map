@@ -9,7 +9,7 @@
 	<meta name="apple-mobile-web-app-capable" content="yes">
 
 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css">
-	<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css">
+	<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css">
 	<link rel="stylesheet" href="css/L.Control.Sidebar.css">
 	<link rel="stylesheet" href="css/L.Control.HtmlLegend.css" />
 	<link rel="stylesheet" href="css/main.css" />
@@ -407,7 +407,9 @@
 			}, { direction: "top", opacity: 0.7 });
 
 		// add dataset infoTyp
-		var layer_infoTyp = new L.FeatureGroup();
+		var layer_infoTyp = L.markerClusterGroup({
+			spiderfyOnMaxZoom: false, showCoverageOnHover: false
+		});
 		layer_infoTyp.addLayer(L.geoJSON(kolibri_parti_info, {
 			style: function (feature) {
 				return {
@@ -448,7 +450,9 @@
 		};
 
 		// add dataset participationTyps
-		var layer_parti = new L.FeatureGroup();
+		var layer_parti = L.markerClusterGroup({
+			spiderfyOnMaxZoom: false, showCoverageOnHover: false
+		});
 		layer_parti.addLayer(L.geoJSON(kolibri_parti_info, {
 			style: function (feature) {
 				return {
@@ -512,10 +516,6 @@
 			return "Country: " + layer.feature.properties.NAME_0 +
 				"<br /> " + layer.feature.properties.commuStrat
 		}, { direction: "top", opacity: 0.7 });
-
-		var Cmarkers = L.markerClusterGroup();
-		Cmarkers.addLayer(layer_parti);
-		map.addLayer(Cmarkers);
 
 		// functions for Features
 		function onEachFeature(feature, layer) {

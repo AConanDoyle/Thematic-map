@@ -9,6 +9,7 @@
 	<meta name="apple-mobile-web-app-capable" content="yes">
 
 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css">
+	<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css">
 	<link rel='stylesheet'
 		href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css'>
 	<link rel="stylesheet" href="css/L.Control.Sidebar.css">
@@ -20,6 +21,7 @@
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-hash/0.2.1/leaflet-hash.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/leaflet.minichart@0.2.5/dist/leaflet.minichart.min.js"></script>
+	<script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
 
 	<script src="js/L.Control.Sidebar.js"></script>
 	<script src="js/L.Control.HtmlLegend.js"></script>
@@ -391,7 +393,9 @@
 			}, { direction: "top", opacity: 0.7 });
 
 		// add dataset infoTyp
-		var layer_infoTyp = new L.FeatureGroup();
+		var layer_infoTyp = L.markerClusterGroup({
+			spiderfyOnMaxZoom: false, showCoverageOnHover: false
+		});		
 		layer_infoTyp.addLayer(L.geoJSON(kolibri_parti_info, {
 			style: function (feature) {
 				return {
@@ -432,7 +436,9 @@
 		};
 
 		// add dataset participationTyps
-		var layer_parti = new L.FeatureGroup();
+		var layer_parti = L.markerClusterGroup({
+			spiderfyOnMaxZoom: false, showCoverageOnHover: false
+		});
 		layer_parti.addLayer(L.geoJSON(kolibri_parti_info, {
 			style: function (feature) {
 				return {
@@ -488,7 +494,7 @@
 			// filter for germany (no data)
 			filter: function (feature) {
 				if (feature.properties.NAME_0 === "Germany") return false
-				else{
+				else {
 					return true
 				}
 			}
