@@ -15,3 +15,6 @@ p {
 .marker-cluster-small div {
 	background-color: rgba(49, 130, 189, 0.6);
 }
+.leaflet-html-legend {
+    width: 270px;
+}
