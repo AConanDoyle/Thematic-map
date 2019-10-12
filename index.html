@@ -26,7 +26,7 @@
 	<script src="js/L.Control.Sidebar.js"></script>
 	<script src="js/L.Control.HtmlLegend.js"></script>
 
-	<title>Webmap Test</title>
+	<title>Webmap</title>
 </head>
 
 <body>
@@ -213,7 +213,8 @@
 			}
 		}));
 
-		var colorSelectorSM = function (i) {
+		// defines color for choropleth map
+		var colorSelector = function (i) {
 			switch (true) {
 				case (i !== "no data" && i <= 1.5):
 					return "#eff3ff";
@@ -235,36 +236,14 @@
 			}
 		};
 
-		var colorSelectorExpCat = function (e) {
-			switch (true) {
-				case (e !== "no data" && e <= 20.0):
-					return "#fee5d9";
-					break;
-				case (e > 20.0 && e <= 40.0):
-					return "#fcae91"
-					break;
-				case (e > 40.0 && e <= 60.0):
-					return "#fb6a4a"
-					break;
-				case (e > 60.0 && e <= 80.0):
-					return "#de2d26"
-					break;
-				case (e > 80.0 && e <= 100.0):
-					return "#a50f15"
-					break;
-				default:
-					return "#cccccc";
-			}
-		};
-
-		// creat sidebar
+		// creats sidebar
 		var sidebar = L.control.sidebar('sidebar', {
 			closeButton: "true",
 			position: "left"
 		});
 		map.addControl(sidebar);
 
-		// sidebar controle
+		// sidebar controle and styling of sidebar
 		var sidebarControl = L.Control.extend({
 			options: {
 				position: 'topleft'
@@ -287,15 +266,16 @@
 		});
 		map.addControl(new sidebarControl());
 
-		// add dataset Social Media
-		var layer_SM = new L.geoJson(kolibri_sm_cat, {
+		// adds dataset
+		// To-Do: change data name and reduce datasize 
+		var layerChoroMap = new L.geoJson(kolibri_sm_cat, {
 			style: function (feature) {
 				if (feature.properties.index_usages_sm === null)
 					var value = "no data"
 				else
 					var value = feature.properties.index_usages_sm;
 				return {
-					fillColor: colorSelectorSM(value).toString(),
+					fillColor: colorSelector(value).toString(),
 					fillOpacity: 0.5,
 					weight: 1,
 					opacity: 1,
@@ -304,8 +284,9 @@
 				};
 			},
 			onEachFeature: onEachFeature
-		})
+		}) // popup for each datapoint 
 			.bindTooltip(function (layer) {
+				// null check for data
 				if (layer.feature.properties.index_usages_sm !== null) {
 					var value = layer.feature.properties.index_usages_sm.toFixed(1);
 					var valueN = layer.feature.properties.index_usages_sm_N;
@@ -316,50 +297,17 @@
 				}
 				return "Country: " + layer.feature.properties.NAME_0 +
 					"<br /> Administrative divisions: " + layer.feature.properties.NAME_1 +
-					"<br /> Social media use: " + value +
-					"<br /> Number of respondents (N): " + valueN;
+					"<br /> First value: " + value +
+					"<br /> Secound value: " + valueN;
 			}, { direction: "top", opacity: 0.7 }).addTo(map);
 
-		// add dataset experince with catastroph
-		var layer_exp_cat = new L.geoJson(kolibri_sm_cat, {
-			style: function (feature) {
-				if (feature.properties.exp_cat_5years_Yes !== null) {
-					var value = Math.round(feature.properties.exp_cat_5years_Yes);
-				}
-				else {
-					var value = "no data";
-				}
-				return {
-					fillColor: colorSelectorExpCat(value),
-					fillOpacity: 0.5,
-					weight: 1,
-					opacity: 1,
-					color: "white",
-					dashArray: '5'
-				};
-			},
-			onEachFeature: onEachFeature
-		})
-			.bindTooltip(function (layer) {
-				if (layer.feature.properties.exp_cat_5years_Yes !== null) {
-					var value = Math.round(layer.feature.properties.exp_cat_5years_Yes) + "%";
-					var valueN = layer.feature.properties.index_usages_sm_N;
-				}
-				else {
-					var valueN = "no data";
-					var value = "no data";
-				}
-				return "Country: " + layer.feature.properties.NAME_0 +
-					"<br /> Administrative divisions: " + layer.feature.properties.NAME_1 +
-					"<br /> Experience with disaster events (last 5 years): " + value +
-					"<br /> Number of respondents (N): " + valueN;
-			}, { direction: "top", opacity: 0.7 });
-
-		// add dataset infoTyp
-		var layer_infoTyp = L.markerClusterGroup({
+		// adds dataset
+		// To-Do: change data name and reduce datasize 
+		var layerPie = L.markerClusterGroup({
+			// clustering pie charts
 			spiderfyOnMaxZoom: false, showCoverageOnHover: false
 		});
-		layer_infoTyp.addLayer(L.geoJSON(kolibri_parti_info, {
+		layerPie.addLayer(L.geoJSON(kolibri_parti_info, {
 			style: function (feature) {
 				return {
 					fillColor: "grey",
@@ -373,7 +321,7 @@
 			onEachFeature: onEachFeaturePie
 		}));
 		for (const i in kolibri_parti_info.features) {
-			var layer_infoTyp_single = L.minichart(
+			var layerPieSingle = L.minichart(
 				// center chart
 				[kolibri_parti_info.features[i].properties.centerlat,
 				kolibri_parti_info.features[i].properties.centerlong],
@@ -389,84 +337,17 @@
 					transitionTime: 2500
 				});
 
-			layer_infoTyp_single.bindTooltip(function (layer) {
+			// popup for each datapoint
+			layerPieSingle.bindTooltip(function (layer) {
 				return "Country: " + kolibri_parti_info.features[i].properties.NAME_0.toString() +
-					"<br /> Classics: " + kolibri_parti_info.features[i].properties.infoTyp_established.toString()
-					+ "% <br /> Inactives: " + kolibri_parti_info.features[i].properties.infoTyp_uninformed.toString() +
-					"% <br /> Multisided: " + kolibri_parti_info.features[i].properties.infoTyp_special.toString() + "%";
+					"<br /> Typ A: " + kolibri_parti_info.features[i].properties.infoTyp_established.toString()
+					+ "% <br /> Typ B: " + kolibri_parti_info.features[i].properties.infoTyp_uninformed.toString() +
+					"% <br /> Typ C: " + kolibri_parti_info.features[i].properties.infoTyp_special.toString() + "%";
 			}, { direction: "top", opacity: 0.7 });
-			layer_infoTyp.addLayer(layer_infoTyp_single);
+			layerPie.addLayer(layerPieSingle);
 		};
 
-		// add dataset participationTyps
-		var layer_parti = L.markerClusterGroup({
-			spiderfyOnMaxZoom: false, showCoverageOnHover: false
-		});
-		layer_parti.addLayer(L.geoJSON(kolibri_parti_info, {
-			style: function (feature) {
-				return {
-					fillColor: "grey",
-					fillOpacity: 0.2,
-					weight: 1,
-					opacity: 1,
-					color: "white",
-					dashArray: '5'
-				};
-			},
-			onEachFeature: onEachFeaturePie
-		}));
-		for (const i in kolibri_parti_info.features) {
-			var layer_parti_single = L.minichart(
-				// center chart
-				[kolibri_parti_info.features[i].properties.centerlat,
-				kolibri_parti_info.features[i].properties.centerlong],
-				{
-					data: [parseInt(kolibri_parti_info.features[i].properties.partiTyp_inactive),
-					parseInt(kolibri_parti_info.features[i].properties.partiTyp_altru),
-					parseInt(kolibri_parti_info.features[i].properties.partiTyp_extro)],
-
-					// format chart
-					type: "pie",
-					labelMinSize: 8, width: 80,
-					colors: ["#deebf7", "#9ecae1", "#3182bd"],
-					transitionTime: 2500
-				});
-
-			layer_parti_single.bindTooltip(function (layer) {
-				return "Country: " + kolibri_parti_info.features[i].properties.NAME_0.toString() +
-					"<br /> The Inactive: " + kolibri_parti_info.features[i].properties.partiTyp_inactive.toString()
-					+ "% <br /> The Altruists: " + kolibri_parti_info.features[i].properties.partiTyp_altru.toString() +
-					"% <br /> The Extroverts: " + kolibri_parti_info.features[i].properties.partiTyp_extro.toString() + "%";
-			}, { direction: "top", opacity: 0.7 });
-			layer_parti.addLayer(layer_parti_single);
-		};
-
-		// add dataset commuStrat
-		var layer_commuStrat = new L.geoJSON(kolibri_parti_info, {
-			style: function (feature) {
-				return {
-					fillColor: "grey",
-					fillOpacity: 0.2,
-					weight: 1,
-					opacity: 1,
-					color: "white",
-					dashArray: '5'
-				};
-			},
-			onEachFeature: onEachFeature,
-			// filter for germany (no data)
-			filter: function (feature) {
-				if (feature.properties.NAME_0 === "Germany") return false
-				else {
-					return true
-				}
-			}
-		}).bindTooltip(function (layer) {
-			return "Country: " + layer.feature.properties.NAME_0 +
-				"<br /> " + layer.feature.properties.commuStrat
-		}, { direction: "top", opacity: 0.7 });
-
-		// functions for Features
+		// functions for choropleth map
 		function onEachFeature(feature, layer) {
 			layer.on({
 				mouseover: highlightFeature,
@@ -499,33 +380,24 @@
 		}
 
 		function resetHighlight(e) {
-			if (map.hasLayer(layer_SM)) {
-				layer_SM.resetStyle(e.target);
-			}
-			if (map.hasLayer(layer_exp_cat)) {
-				layer_exp_cat.resetStyle(e.target);
-			}
-			if (map.hasLayer(layer_commuStrat)) {
-				layer_commuStrat.resetStyle(e.target);
+			if (map.hasLayer(layerChoroMap)) {
+				layerChoroMap.resetStyle(e.target);
 			}
 		}
 
-		// layer controle
+		// layer controle at topr right corner 
 		L.control.layers(
 			{
-				"Social media use": layer_SM,
-				"Experience with disaster events (last 5 years)": layer_exp_cat,
-				"Information types": layer_infoTyp,
-				"Participation types": layer_parti,
-				"Communication strategies": layer_commuStrat
+				"Choropleth map": layerChoroMap,
+				"Pie chart": layerPie,
 			}, null, { collapsed: false }).addTo(map);
 
-		// legends
-		var legend_SM = L.control.htmllegend({
-			position: 'topright',
+		// dynamic legends
+		var legendChoroMap = L.control.htmllegend({
+			position: 'bottomright',
 			legends: [{
-				name: 'Social media use',
-				layer: layer_SM,
+				name: 'Choropleth map',
+				layer: layerChoroMap,
 				elements: [{
 					label: '< 1,5',
 					html: '',
@@ -578,70 +450,13 @@
 			}],
 			disableVisibilityControls: true
 		}).addTo(map);
-		var legend_exp_cat = L.control.htmllegend({
-			position: 'topright',
+		var legendPie = L.control.htmllegend({
+			position: 'bottomright',
 			legends: [{
-				name: 'Experience with disaster events (last 5 years)',
-				layer: layer_exp_cat,
+				name: 'Pie chart“ ',
+				layer: layerPie,
 				elements: [{
-					label: '0% - 20%',
-					html: '',
-					style: {
-						'background-color': '#fee5d9',
-						'width': '15px',
-						'height': '15px'
-					}
-				}, {
-					label: '>20% - 40%',
-					html: '',
-					style: {
-						'background-color': '#fcae91',
-						'width': '15px',
-						'height': '15px'
-					}
-				}, {
-					label: '>40% - 60%',
-					html: '',
-					style: {
-						'background-color': '#fb6a4a',
-						'width': '15px',
-						'height': '15px'
-					}
-				}, {
-					label: '>60% - 80%',
-					html: '',
-					style: {
-						'background-color': '#de2d26',
-						'width': '15px',
-						'height': '15px'
-					}
-				}, {
-					label: '>80% - 100%',
-					html: '',
-					style: {
-						'background-color': '#a50f15',
-						'width': '15px',
-						'height': '15px'
-					}
-				}, {
-					label: 'no data',
-					html: '',
-					style: {
-						'background-color': '#cccccc',
-						'width': '15px',
-						'height': '15px'
-					}
-				}]
-			}],
-			disableVisibilityControls: true
-		}).addTo(map);
-		var legend_infotyp = L.control.htmllegend({
-			position: 'topright',
-			legends: [{
-				name: 'Information types“ ',
-				layer: layer_infoTyp,
-				elements: [{
-					label: 'Classics',
+					label: 'Typ A',
 					html: '',
 					style: {
 						'background-color': '#deebf7',
@@ -649,7 +464,7 @@
 						'height': '15px'
 					}
 				}, {
-					label: 'Inactives',
+					label: 'Typ B',
 					html: '',
 					style: {
 						'background-color': '#9ecae1',
@@ -657,7 +472,7 @@
 						'height': '15px'
 					}
 				}, {
-					label: 'Multisided',
+					label: 'Typ C',
 					html: '',
 					style: {
 						'background-color': '#3182bd',
@@ -668,40 +483,6 @@
 			}],
 			disableVisibilityControls: true
 		}).addTo(map);
-		var legend_infotyp = L.control.htmllegend({
-			position: 'topright',
-			legends: [{
-				name: 'Participation types',
-				layer: layer_parti,
-				elements: [{
-					label: 'The Inactive',
-					html: '',
-					style: {
-						'background-color': '#deebf7',
-						'width': '15px',
-						'height': '15px'
-					}
-				}, {
-					label: 'The Altruists',
-					html: '',
-					style: {
-						'background-color': '#9ecae1',
-						'width': '15px',
-						'height': '15px'
-					}
-				}, {
-					label: 'The Extroverts',
-					html: '',
-					style: {
-						'background-color': '#3182bd',
-						'width': '15px',
-						'height': '15px'
-					}
-				}]
-			}],
-			disableVisibilityControls: true
-		}).addTo(map);
-
 	</script>
 </body>
 
