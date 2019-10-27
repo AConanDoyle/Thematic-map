@@ -187,12 +187,37 @@
 				IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 				CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 			</p>
+			<p>
+				Copyright 2012 David Leaver
+
+				Permission is hereby granted, free of charge, to any person obtaining
+				a copy of this software and associated documentation files (the
+				"Software"), to deal in the Software without restriction, including
+				without limitation the rights to use, copy, modify, merge, publish,
+				distribute, sublicense, and/or sell copies of the Software, and to
+				permit persons to whom the Software is furnished to do so, subject to
+				the following conditions:
+
+				The above copyright notice and this permission notice shall be
+				included in all copies or substantial portions of the Software.
+
+				THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+				EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+				MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+				NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+				LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+				OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+				WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+			</p>
 		</details>
 	</div>
-	<script src="data/kolibri_sm_cat.geojson"></script>
-	<script src="data/kolibri_parti_info.geojson"></script>
+	<script src="data/choropleth_data.geojson"></script>
+	<script src="data/pie_data.geojson"></script>
 
 	<script>
+		// colors choropleth map and pie chart
+		const color1 = "#eff3ff", color2 = "#bdd7e7", color3 = "#6baed6", color4 = "#3182bd", color5 = "#08519c", nodata = "#cccccc",
+		 color6 = "#deebf7", color7 = "#9ecae1"; 
 
 		var hash = new L.Hash(map);
 		var access_token = 'access_token=pk.eyJ1IjoiZmVvcyIsImEiOiJjandoa3E1ODQyN2NwNDhtcThna2RpbzdwIn0.1Igm1-YZfJKfGRVWzm2CkA';
@@ -217,22 +242,22 @@
 		var colorSelector = function (i) {
 			switch (true) {
 				case (i !== "no data" && i <= 1.5):
-					return "#eff3ff";
+					return color1;
 					break;
 				case (i > 1.5 && i <= 2.0):
-					return "#bdd7e7"
+					return color2
 					break;
 				case (i > 2.0 && i <= 2.5):
-					return "#6baed6"
+					return color3
 					break;
 				case (i > 2.5 && i <= 3.0):
-					return "#3182bd"
+					return color4
 					break;
 				case (i > 3.0):
-					return "#08519c"
+					return color5
 					break;
 				default:
-					return "#cccccc";
+					return nodata;
 			}
 		};
 
@@ -268,14 +293,14 @@
 
 		// adds dataset
 		// To-Do: change data name and reduce datasize 
-		var layerChoroMap = new L.geoJson(kolibri_sm_cat, {
+		var layerChoroMap = new L.geoJson(choropleth_data, {
 			style: function (feature) {
-				if (feature.properties.index_usages_sm === null)
-					var value = "no data"
+				if (feature.properties.value1 === null)
+					var value1 = "no data"
 				else
-					var value = feature.properties.index_usages_sm;
+					var value1 = feature.properties.value1;
 				return {
-					fillColor: colorSelector(value).toString(),
+					fillColor: colorSelector(value1).toString(),
 					fillOpacity: 0.5,
 					weight: 1,
 					opacity: 1,
@@ -287,18 +312,18 @@
 		}) // popup for each datapoint 
 			.bindTooltip(function (layer) {
 				// null check for data
-				if (layer.feature.properties.index_usages_sm !== null) {
-					var value = layer.feature.properties.index_usages_sm.toFixed(1);
-					var valueN = layer.feature.properties.index_usages_sm_N;
+				if (layer.feature.properties.value1 !== null) {
+					var value1 = layer.feature.properties.value1.toFixed(1);
+					var value2 = layer.feature.properties.value2;
 				}
 				else {
-					var value = "no data";
-					var valueN = "no data";
+					var value1 = "no data";
+					var value2 = "no data";
 				}
 				return "Country: " + layer.feature.properties.NAME_0 +
 					"<br /> Administrative divisions: " + layer.feature.properties.NAME_1 +
-					"<br /> First value: " + value +
-					"<br /> Secound value: " + valueN;
+					"<br /> First value1: " + value1 +
+					"<br /> Secound value1: " + value2;
 			}, { direction: "top", opacity: 0.7 }).addTo(map);
 
 		// adds dataset
@@ -307,7 +332,7 @@
 			// clustering pie charts
 			spiderfyOnMaxZoom: false, showCoverageOnHover: false
 		});
-		layerPie.addLayer(L.geoJSON(kolibri_parti_info, {
+		layerPie.addLayer(L.geoJSON(pie_data, {
 			style: function (feature) {
 				return {
 					fillColor: "grey",
@@ -320,29 +345,29 @@
 			},
 			onEachFeature: onEachFeaturePie
 		}));
-		for (const i in kolibri_parti_info.features) {
+		for (const i in pie_data.features) {
 			var layerPieSingle = L.minichart(
 				// center chart
-				[kolibri_parti_info.features[i].properties.centerlat,
-				kolibri_parti_info.features[i].properties.centerlong],
+				[pie_data.features[i].properties.centerlat,
+				pie_data.features[i].properties.centerlong],
 				{
-					data: [parseInt(kolibri_parti_info.features[i].properties.infoTyp_established),
-					parseInt(kolibri_parti_info.features[i].properties.infoTyp_uninformed),
-					parseInt(kolibri_parti_info.features[i].properties.infoTyp_special)],
+					data: [parseInt(pie_data.features[i].properties.typA),
+					parseInt(pie_data.features[i].properties.typB),
+					parseInt(pie_data.features[i].properties.typC)],
 
 					// format chart
 					type: "pie",
 					labelMinSize: 8, width: 80,
-					colors: ["#deebf7", "#9ecae1", "#3182bd"],
+					colors: [color6, color7, color4],
 					transitionTime: 2500
 				});
 
 			// popup for each datapoint
 			layerPieSingle.bindTooltip(function (layer) {
-				return "Country: " + kolibri_parti_info.features[i].properties.NAME_0.toString() +
-					"<br /> Typ A: " + kolibri_parti_info.features[i].properties.infoTyp_established.toString()
-					+ "% <br /> Typ B: " + kolibri_parti_info.features[i].properties.infoTyp_uninformed.toString() +
-					"% <br /> Typ C: " + kolibri_parti_info.features[i].properties.infoTyp_special.toString() + "%";
+				return "Country: " + pie_data.features[i].properties.NAME_0.toString() +
+					"<br /> Typ A: " + pie_data.features[i].properties.typA.toString()
+					+ "% <br /> Typ B: " + pie_data.features[i].properties.typB.toString() +
+					"% <br /> Typ C: " + pie_data.features[i].properties.typC.toString() + "%";
 			}, { direction: "top", opacity: 0.7 });
 			layerPie.addLayer(layerPieSingle);
 		};
@@ -402,7 +427,7 @@
 					label: '< 1,5',
 					html: '',
 					style: {
-						'background-color': '#eff3ff',
+						'background-color': color1,
 						'width': '15px',
 						'height': '15px'
 					}
@@ -410,7 +435,7 @@
 					label: '1,5 - 2,0',
 					html: '',
 					style: {
-						'background-color': '#bdd7e7',
+						'background-color': color2,
 						'width': '15px',
 						'height': '15px'
 					}
@@ -418,7 +443,7 @@
 					label: '2,0 - 2,5',
 					html: '',
 					style: {
-						'background-color': '#6baed6',
+						'background-color': color3,
 						'width': '15px',
 						'height': '15px'
 					}
@@ -426,7 +451,7 @@
 					label: '2,5 - 3,0',
 					html: '',
 					style: {
-						'background-color': '#3182bd',
+						'background-color': color4,
 						'width': '15px',
 						'height': '15px'
 					}
@@ -434,7 +459,7 @@
 					label: '> 3,0',
 					html: '',
 					style: {
-						'background-color': '#08519c',
+						'background-color': color5,
 						'width': '15px',
 						'height': '15px'
 					}
@@ -442,7 +467,7 @@
 					label: 'no data',
 					html: '',
 					style: {
-						'background-color': '#cccccc',
+						'background-color': nodata,
 						'width': '15px',
 						'height': '15px'
 					}
@@ -459,7 +484,7 @@
 					label: 'Typ A',
 					html: '',
 					style: {
-						'background-color': '#deebf7',
+						'background-color': color6,
 						'width': '15px',
 						'height': '15px'
 					}
@@ -467,7 +492,7 @@
 					label: 'Typ B',
 					html: '',
 					style: {
-						'background-color': '#9ecae1',
+						'background-color': color7,
 						'width': '15px',
 						'height': '15px'
 					}
@@ -475,7 +500,7 @@
 					label: 'Typ C',
 					html: '',
 					style: {
-						'background-color': '#3182bd',
+						'background-color': color3,
 						'width': '15px',
 						'height': '15px'
 					}
