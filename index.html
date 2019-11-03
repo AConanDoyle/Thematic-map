@@ -216,12 +216,12 @@
 
 	<script>
 		// colors choropleth map and pie chart
-		const color1 = "#eff3ff", color2 = "#bdd7e7", color3 = "#6baed6", color4 = "#3182bd", color5 = "#08519c", nodata = "#cccccc",
-			color6 = "#deebf7", color7 = "#9ecae1";
+		const color1 = "#ffffb2", color2 = "#fecc5c", color3 = "#fd8d3c", color4 = "#f03b20", color5 = "#bd0026", nodata = "#cccccc",
+			color6 = "#deebf7", color7 = "#9ecae1", color8 = "rgb(49, 130, 189)";
 
 		var hash = new L.Hash(map);
-		var access_token = 'access_token=pk.eyJ1IjoiZmVvcyIsImEiOiJjandoa3E1ODQyN2NwNDhtcThna2RpbzdwIn0.1Igm1-YZfJKfGRVWzm2CkA';
-		var basemap = L.tileLayer('https://api.mapbox.com/styles/v1/feos/cjxaf1go60e461cp3rmlsf7jm/tiles/256/{z}/{x}/{y}?' + access_token,
+		var access_token = 'access_token=pk.eyJ1IjoiYW5kcm9pZHBpdGkiLCJhIjoiY2syZzBiNjRyMGtsYjNib2Vza3JhNjR0ZiJ9.4eiH_ceAdoWy1kkPo-Lr6w';
+		var basemap = L.tileLayer('https://api.mapbox.com/styles/v1/androidpiti/ck2gcrzu90xa71dlcay5biww8/tiles/256/{z}/{x}/{y}?' + access_token,
 			{ attribution: '© <a href="https://apps.mapbox.com/feedback/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>' });
 
 		var map = L.map('map', {
@@ -358,7 +358,7 @@
 					// format chart
 					type: "pie",
 					labelMinSize: 8, width: 80,
-					colors: [color6, color7, color4],
+					colors: [color6, color7, color8],
 					transitionTime: 2500
 				});
 
@@ -500,7 +500,7 @@
 					label: 'Typ C',
 					html: '',
 					style: {
-						'background-color': color3,
+						'background-color': color8,
 						'width': '15px',
 						'height': '15px'
 					}
