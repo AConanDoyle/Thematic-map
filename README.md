@@ -1,4 +1,4 @@
 # Thematic-map
 Thematic map with some demo content
 
-[Demo](https://magnesia-berlin.de/projekte/ "magnesia-berlin.de")
+[Demo](https://rawcdn.githack.com/AConanDoyle/Thematic-map/master/index.html)
